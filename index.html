@@ -752,6 +752,33 @@
             margin-top: 30px;
         }
         
+        /* 教師入口樣式 */
+        .teacher-access {
+            text-align: center;
+            padding: 15px;
+            background-color: #f9fbfd;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .teacher-access-link {
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 2px solid #2a5298;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .teacher-access-link:hover {
+            background-color: #2a5298;
+            color: white;
+        }
+        
         /* 響應式設計 */
         @media (max-width: 1200px) {
             .stats-box {
@@ -931,13 +958,13 @@
         
         <div class="tabs-container">
             <div class="tabs">
-                <button class="tab-btn active" data-tab="attendance">
+                <button class="tab-btn active" data-tab="attendance" id="teacherTabBtn">
                     <i class="fas fa-clipboard-check"></i> 教師點名系統
                 </button>
-                <button class="tab-btn" data-tab="checkin">
+                <button class="tab-btn" data-tab="checkin" id="studentTabBtn">
                     <i class="fas fa-qrcode"></i> 學生掃碼報到
                 </button>
-                <button class="tab-btn" data-tab="help">
+                <button class="tab-btn" data-tab="help" id="helpTabBtn">
                     <i class="fas fa-question-circle"></i> 使用說明
                 </button>
             </div>
@@ -1248,12 +1275,28 @@
                 </div>
                 
                 <div class="help-section">
+                    <h3><i class="fas fa-lock"></i> 系統安全說明</h3>
+                    <ul>
+                        <li><strong>學生模式</strong>：只能使用「學生掃碼報到」功能，查看個人報到記錄</li>
+                        <li><strong>教師模式</strong>：需輸入密碼才能進入，可進行所有點名和管理操作</li>
+                        <li><strong>密碼保護</strong>：教師密碼為「teacher123」（實際使用時請更改）</li>
+                        <li><strong>訪問方式</strong>：
+                            <ul>
+                                <li>學生：直接訪問網址或點擊「學生掃碼報到」</li>
+                                <li>教師：在網址後加上 <code>?role=teacher&password=teacher123</code> 或點擊頁面底部的「教師登入」</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
                     <h3><i class="fas fa-cloud-upload-alt"></i> 部署說明</h3>
                     <ol>
                         <li><strong>本地使用</strong>：將此檔案儲存為HTML檔案，直接以瀏覽器開啟即可</li>
                         <li><strong>Google雲端硬碟</strong>：上傳至Google雲端硬碟，分享連結並將「view」改為「preview」</li>
                         <li><strong>Google Sites</strong>：建立Google Sites，插入HTML方塊貼入此程式碼</li>
                         <li><strong>GitHub Pages</strong>：上傳至GitHub倉庫，啟用GitHub Pages功能</li>
+                        <li><strong>安全建議</strong>：實際使用時請修改 <code>systemConfig.teacherPassword</code> 為更複雜的密碼</li>
                     </ol>
                 </div>
                 
@@ -1270,6 +1313,16 @@
                     </ul>
                 </div>
             </div>
+        </div>
+        
+        <!-- 教師入口區域（學生模式下顯示） -->
+        <div class="teacher-access" id="teacherAccess" style="display: none;">
+            <h3><i class="fas fa-chalkboard-teacher"></i> 教師入口</h3>
+            <p>如果您是教師，請點擊以下連結進入教師管理模式</p>
+            <a href="#" id="teacherLoginLink" class="teacher-access-link">
+                <i class="fas fa-sign-in-alt"></i> 教師登入
+            </a>
+            <p style="margin-top: 10px; font-size: 12px; color: #666;">需要密碼才能進入</p>
         </div>
         
         <footer>
@@ -1395,7 +1448,8 @@
             studentIdPattern: /^[a-zA-Z0-9\-_]+$/,
             maxStudentNameLength: 20,
             performanceThreshold: 100, // 學生數量超過此值啟用效能模式
-            dataCompressionThreshold: 3 * 1024 * 1024 // 3MB
+            dataCompressionThreshold: 3 * 1024 * 1024, // 3MB
+            teacherPassword: 'teacher123' // 教師密碼（實際使用時請更改）
         };
 
         // ==================== 課程資料 ====================
@@ -1474,6 +1528,9 @@
         let isRendering = false;
         let virtualScroll = null;
         let performanceMode = false;
+        
+        // ==================== 角色管理變數 ====================
+        let isTeacherMode = false;
 
         // ==================== 系統初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1482,40 +1539,254 @@
 
         function initSystem() {
             try {
-                // 初始化系統
-                initOfflineDetection();
-                cleanInvalidAttendanceData();
-                loadDataFromStorage();
-                initTabs();
-                initWeekButtons();
-                initCourseButtons();
-                initAttendanceControls();
-                initActionButtons();
-                initCheckinSystem();
-                initStudentManagement();
-                initModals();
-                renderStudentTableOptimized();
-                updateAllStats();
-                checkAbsenceWarnings();
-                updateQRCode();
-                initWeekDropdown();
-                initKeyboardShortcuts();
-                startAutoSave();
-                createDataBackup();
-                initScrollIndicator();
-                initPerformanceMonitor();
+                // 檢測用戶角色
+                detectUserRole();
                 
-                // 初始健康檢查
-                setTimeout(() => {
-                    systemHealthCheck();
-                    initMemoryMonitor();
-                    updateDataSizeIndicator();
-                }, 3000);
-                
-                console.log('系統初始化完成，版本 2.2');
+                // 根據角色初始化系統
+                if (isTeacherMode) {
+                    initTeacherSystem();
+                } else {
+                    initStudentSystem();
+                }
             } catch (error) {
                 console.error('系統初始化失敗:', error);
                 showNotification('系統初始化失敗，請重新整理頁面', 'error');
+            }
+        }
+
+        // ==================== 角色檢測 ====================
+        function detectUserRole() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roleFromUrl = urlParams.get('role');
+            const passwordFromUrl = urlParams.get('password');
+            
+            // 如果有role參數且為teacher，嘗試進入教師模式
+            if (roleFromUrl === 'teacher') {
+                // 檢查密碼
+                if (passwordFromUrl === systemConfig.teacherPassword) {
+                    isTeacherMode = true;
+                    localStorage.setItem('teacherAuthenticated', 'true');
+                    return;
+                } else {
+                    // 密碼錯誤，顯示提示
+                    const enteredPassword = prompt('請輸入教師密碼：');
+                    if (enteredPassword === systemConfig.teacherPassword) {
+                        isTeacherMode = true;
+                        localStorage.setItem('teacherAuthenticated', 'true');
+                        
+                        // 更新URL但不刷新頁面
+                        const newUrl = new URL(window.location);
+                        newUrl.searchParams.set('password', enteredPassword);
+                        window.history.replaceState({}, '', newUrl);
+                        return;
+                    } else {
+                        alert('密碼錯誤！將進入學生模式。');
+                        // 移除可能的教師認證標記
+                        localStorage.removeItem('teacherAuthenticated');
+                    }
+                }
+            }
+            
+            // 檢查localStorage中是否有教師認證
+            if (localStorage.getItem('teacherAuthenticated') === 'true') {
+                isTeacherMode = true;
+            } else {
+                isTeacherMode = false;
+            }
+        }
+
+        // ==================== 教師系統初始化 ====================
+        function initTeacherSystem() {
+            // 初始化教師系統
+            initOfflineDetection();
+            cleanInvalidAttendanceData();
+            loadDataFromStorage();
+            initTabs();
+            initWeekButtons();
+            initCourseButtons();
+            initAttendanceControls();
+            initActionButtons();
+            initCheckinSystem();
+            initStudentManagement();
+            initModals();
+            renderStudentTableOptimized();
+            updateAllStats();
+            checkAbsenceWarnings();
+            updateQRCode();
+            initWeekDropdown();
+            initKeyboardShortcuts();
+            startAutoSave();
+            createDataBackup();
+            initScrollIndicator();
+            initPerformanceMonitor();
+            
+            // 添加登出按鈕
+            addLogoutButton();
+            
+            // 隱藏教師入口
+            const teacherAccess = document.getElementById('teacherAccess');
+            if (teacherAccess) {
+                teacherAccess.style.display = 'none';
+            }
+            
+            // 初始健康檢查
+            setTimeout(() => {
+                systemHealthCheck();
+                initMemoryMonitor();
+                updateDataSizeIndicator();
+            }, 3000);
+            
+            console.log('教師系統初始化完成，版本 2.2');
+        }
+
+        // ==================== 學生系統初始化 ====================
+        function initStudentSystem() {
+            // 隱藏教師功能
+            hideTeacherElements();
+            
+            // 強制顯示學生報到頁面
+            forceStudentTab();
+            
+            // 初始化必要的功能
+            initOfflineDetection();
+            loadDataFromStorage();
+            initCheckinSystem();
+            initWeekDropdown();
+            
+            // 更新標題
+            updateStudentModeTitle();
+            
+            // 顯示教師入口
+            initTeacherAccessLink();
+            
+            console.log('學生系統初始化完成');
+        }
+
+        // ==================== 角色相關輔助函數 ====================
+        function hideTeacherElements() {
+            // 隱藏教師相關的頁籤
+            const teacherTabs = document.querySelectorAll('#teacherTabBtn, #helpTabBtn');
+            teacherTabs.forEach(tab => {
+                if (tab) tab.style.display = 'none';
+            });
+            
+            // 隱藏教師相關的操作按鈕
+            const teacherButtons = document.querySelectorAll('#saveBtn, #resetBtn, #markAllPresentBtn, #exportBtn, #importBtn, #exportExcelBtn, #cleanupBtn, #addStudentBtn, #batchDeleteBtn, #importStudentsBtn');
+            teacherButtons.forEach(btn => {
+                if (btn) btn.style.display = 'none';
+            });
+            
+            // 隱藏教師相關的區域
+            const teacherSections = document.querySelectorAll('.student-management-section, .qr-section, .notification-panel, .attendance-controls');
+            teacherSections.forEach(section => {
+                if (section) section.style.display = 'none';
+            });
+            
+            // 隱藏課程切換按鈕
+            const courseButtons = document.querySelectorAll('#course1Btn, #course2Btn, #course3Btn');
+            courseButtons.forEach(btn => {
+                if (btn) btn.style.display = 'none';
+            });
+            
+            // 隱藏側邊欄的週次選擇
+            const weekSelector = document.querySelector('.week-selector');
+            if (weekSelector) {
+                weekSelector.style.display = 'none';
+            }
+            
+            // 隱藏統計盒子
+            const statsBox = document.querySelector('.stats-box');
+            if (statsBox) {
+                statsBox.style.display = 'none';
+            }
+            
+            // 隱藏總體統計
+            const totalStats = document.getElementById('totalStats');
+            if (totalStats) {
+                totalStats.style.display = 'none';
+            }
+            
+            // 隱藏學生表格
+            const studentListContainer = document.querySelector('.student-list-container');
+            if (studentListContainer) {
+                studentListContainer.style.display = 'none';
+            }
+        }
+
+        function forceStudentTab() {
+            // 移除所有頁籤的active類
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // 強制激活學生報到頁籤
+            const studentTabBtn = document.getElementById('studentTabBtn');
+            const studentTabContent = document.getElementById('checkin');
+            
+            if (studentTabBtn && studentTabContent) {
+                studentTabBtn.classList.add('active');
+                studentTabContent.classList.add('active');
+            }
+        }
+
+        function updateStudentModeTitle() {
+            const header = document.querySelector('header h1');
+            if (header) {
+                header.innerHTML = '<i class="fas fa-qrcode"></i> 學生點名報到系統';
+            }
+            
+            const subtitle = document.querySelector('.subtitle');
+            if (subtitle) {
+                subtitle.textContent = '請使用此系統進行課堂報到';
+            }
+        }
+
+        function addLogoutButton() {
+            // 檢查是否已存在登出按鈕
+            if (document.getElementById('logoutBtn')) return;
+            
+            const logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logoutBtn';
+            logoutBtn.className = 'btn btn-danger';
+            logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> 登出教師模式';
+            logoutBtn.style.marginLeft = '10px';
+            logoutBtn.style.marginTop = '10px';
+            
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('確定要登出教師模式嗎？')) {
+                    localStorage.removeItem('teacherAuthenticated');
+                    // 重新導向到學生模式
+                    window.location.href = window.location.pathname;
+                }
+            });
+            
+            // 添加到header或適當的位置
+            const header = document.querySelector('header');
+            if (header) {
+                header.appendChild(logoutBtn);
+            }
+        }
+
+        function initTeacherAccessLink() {
+            const teacherAccess = document.getElementById('teacherAccess');
+            const teacherLoginLink = document.getElementById('teacherLoginLink');
+            
+            if (!teacherAccess || !teacherLoginLink) return;
+            
+            // 只有在學生模式下才顯示教師入口
+            if (!isTeacherMode) {
+                teacherAccess.style.display = 'block';
+                
+                teacherLoginLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const password = prompt('請輸入教師密碼：');
+                    if (password === systemConfig.teacherPassword) {
+                        localStorage.setItem('teacherAuthenticated', 'true');
+                        // 重新載入頁面進入教師模式
+                        window.location.href = window.location.pathname + '?role=teacher&password=' + encodeURIComponent(password);
+                    } else {
+                        alert('密碼錯誤！');
+                    }
+                });
             }
         }
 
@@ -1610,6 +1881,12 @@
         }
 
         function addStudent() {
+            // 學生模式下不能新增學生
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             const studentId = document.getElementById('newStudentId').value.trim();
             const studentName = document.getElementById('newStudentName').value.trim();
             
@@ -1685,6 +1962,12 @@
         }
 
         function deleteStudent(studentId) {
+            // 學生模式下不能刪除學生
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             if (!studentId) return;
             
             const studentName = getStudentName(studentId);
@@ -1733,6 +2016,12 @@
         }
 
         function openBatchDeleteModal() {
+            // 學生模式下不能批次刪除
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             // 清空選取列表
             selectedForDeletion = [];
             
@@ -1779,6 +2068,12 @@
         }
 
         function confirmBatchDelete() {
+            // 學生模式下不能批次刪除
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             if (selectedForDeletion.length === 0) {
                 showNotification('沒有選取要刪除的學生', 'error');
                 return;
@@ -1833,6 +2128,12 @@
         }
 
         function openImportStudentsModal() {
+            // 學生模式下不能匯入學生
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             // 清空表單
             document.getElementById('importData').value = '';
             document.getElementById('importPreview').style.display = 'none';
@@ -1842,6 +2143,12 @@
         }
 
         function previewImport() {
+            // 學生模式下不能預覽匯入
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             const importData = document.getElementById('importData').value.trim();
             const format = document.getElementById('importFormat').value;
             
@@ -1954,6 +2261,12 @@
         }
 
         function confirmImport() {
+            // 學生模式下不能匯入學生
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             const importData = document.getElementById('importData').value.trim();
             const format = document.getElementById('importFormat').value;
             const action = document.getElementById('importAction').value;
@@ -2171,6 +2484,12 @@
 
         // ==================== 資料清理功能 ====================
         function openCleanupModal() {
+            // 學生模式下不能清理資料
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             // 計算當前資料大小
             const dataSize = calculateDataSize();
             document.getElementById('beforeCleanupSize').textContent = formatBytes(dataSize);
@@ -2187,6 +2506,12 @@
         }
         
         function analyzeCleanup() {
+            // 學生模式下不能分析清理
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             showLoading('分析資料中...');
             
             setTimeout(() => {
@@ -2206,6 +2531,12 @@
         }
         
         function confirmCleanup() {
+            // 學生模式下不能清理資料
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             showLoading('清理資料中...');
             
             setTimeout(() => {
@@ -2897,6 +3228,12 @@
         function initTabs() {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
+                    // 如果是學生模式，只允許切換到學生報到頁面
+                    if (!isTeacherMode && this.dataset.tab !== 'checkin') {
+                        showNotification('學生模式無法訪問此功能', 'error');
+                        return;
+                    }
+                    
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     
@@ -2980,6 +3317,12 @@
         }
 
         function switchCourse(courseId) {
+            // 學生模式下不能切換課程
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             currentCourse = courseId;
             
             document.getElementById('course1Btn').className = 'btn btn-secondary';
@@ -3137,6 +3480,12 @@
         }
 
         function toggleStudentSelection(studentId, row) {
+            // 學生模式下不能選擇學生
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             const index = selectedStudents.indexOf(studentId);
             if (index > -1) {
                 selectedStudents.splice(index, 1);
@@ -3240,6 +3589,9 @@
         }
 
         function checkAbsenceWarnings() {
+            // 學生模式下不顯示曠課警告
+            if (!isTeacherMode) return;
+            
             const notificationPanel = document.getElementById('notificationPanel');
             const warningList = document.getElementById('warningList');
             
@@ -3287,6 +3639,9 @@
 
         // ==================== QR Code功能 ====================
         function updateQRCode() {
+            // 學生模式下不顯示QR Code
+            if (!isTeacherMode) return;
+            
             const canvas = document.getElementById('qrCodeCanvas');
             if (!canvas) return;
             
@@ -3475,7 +3830,7 @@
                 
                 loadCheckinHistory(studentId);
                 
-                if (currentCourse === courseId && currentWeek.toString() === week) {
+                if (isTeacherMode && currentCourse === courseId && currentWeek.toString() === week) {
                     renderStudentTableOptimized();
                     updateAllStats();
                     checkAbsenceWarnings();
@@ -3577,6 +3932,12 @@
         }
 
         function exportToExcelEnhanced() {
+            // 學生模式下不能匯出Excel
+            if (!isTeacherMode) {
+                showNotification('學生模式無法執行此操作', 'error');
+                return;
+            }
+            
             showLoading('準備匯出資料...');
             
             setTimeout(() => {
@@ -3681,6 +4042,12 @@
         function initAttendanceControls() {
             document.querySelectorAll('.attendance-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
+                    // 學生模式下不能操作點名
+                    if (!isTeacherMode) {
+                        showNotification('學生模式無法執行此操作', 'error');
+                        return;
+                    }
+                    
                     const status = this.dataset.status;
                     
                     if (selectedStudents.length === 0) {
@@ -3710,12 +4077,24 @@
 
         function initActionButtons() {
             document.getElementById('saveBtn').addEventListener('click', function() {
+                // 學生模式下不能儲存
+                if (!isTeacherMode) {
+                    showNotification('學生模式無法執行此操作', 'error');
+                    return;
+                }
+                
                 if (saveDataToStorage()) {
                     showNotification('點名記錄已儲存！', 'success');
                 }
             });
             
             document.getElementById('resetBtn').addEventListener('click', function() {
+                // 學生模式下不能重設
+                if (!isTeacherMode) {
+                    showNotification('學生模式無法執行此操作', 'error');
+                    return;
+                }
+                
                 if (confirm('確定要重設本週所有學生的點名記錄嗎？所有學生將恢復為「未報到」狀態')) {
                     showLoading('重設中...');
                     setTimeout(() => {
@@ -3734,6 +4113,12 @@
             });
             
             document.getElementById('markAllPresentBtn').addEventListener('click', function() {
+                // 學生模式下不能標記全部出席
+                if (!isTeacherMode) {
+                    showNotification('學生模式無法執行此操作', 'error');
+                    return;
+                }
+                
                 if (confirm('確定要將本週所有學生標記為「出席」嗎？')) {
                     showLoading('標記中...');
                     setTimeout(() => {
@@ -3752,6 +4137,12 @@
             });
             
             document.getElementById('exportBtn').addEventListener('click', function() {
+                // 學生模式下不能匯出
+                if (!isTeacherMode) {
+                    showNotification('學生模式無法執行此操作', 'error');
+                    return;
+                }
+                
                 showLoading('匯出中...');
                 setTimeout(() => {
                     const dataStr = JSON.stringify(attendanceData);
@@ -3769,6 +4160,12 @@
             });
             
             document.getElementById('importBtn').addEventListener('click', function() {
+                // 學生模式下不能匯入
+                if (!isTeacherMode) {
+                    showNotification('學生模式無法執行此操作', 'error');
+                    return;
+                }
+                
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'application/json';
@@ -3858,6 +4255,9 @@
         // ==================== 鍵盤快捷鍵 ====================
         function initKeyboardShortcuts() {
             document.addEventListener('keydown', function(e) {
+                // 如果是學生模式，禁用教師快捷鍵
+                if (!isTeacherMode) return;
+                
                 const activeElement = document.activeElement;
                 const isInputFocused = activeElement && 
                                       (activeElement.tagName === 'INPUT' || 
@@ -4111,7 +4511,7 @@
             saveDataToStorage();
             saveCoursesToStorage();
             
-            if (selectedStudents.length > 0) {
+            if (isTeacherMode && selectedStudents.length > 0) {
                 e.preventDefault();
                 e.returnValue = '您有未儲存的點名變更，確定要離開嗎？';
                 return e.returnValue;
