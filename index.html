@@ -1011,6 +1011,9 @@
                         <button class="btn btn-secondary" id="markAllPresentBtn">
                             <i class="fas fa-user-check"></i> 全標出席
                         </button>
+                        <button class="btn btn-warning" id="githubSyncBtn">
+                            <i class="fab fa-github"></i> GitHub 同步
+                        </button>
                     </div>
                     
                     <!-- 效能警告 -->
@@ -1261,6 +1264,7 @@
                         <li><strong>匯出資料</strong>：可將點名記錄匯出為JSON或Excel格式</li>
                         <li><strong>快捷鍵</strong>：數字鍵1-6可快速選擇點名狀態（1:出席, 2:請假, 3:公假, 4:事假, 5:曠課, 6:未報到）</li>
                         <li><strong>資料清理</strong>：定期使用清理功能移除無效資料</li>
+                        <li><strong>GitHub 同步</strong>：使用GitHub Gist進行跨裝置資料同步</li>
                     </ol>
                 </div>
                 
@@ -1305,7 +1309,7 @@
                     <ul>
                         <li>本系統使用瀏覽器本地儲存，清除瀏覽器資料會遺失點名記錄</li>
                         <li>建議定期匯出備份點名記錄和學生資料</li>
-                        <li>在不同裝置間使用時，請匯入先前備份的點名記錄</li>
+                        <li>在不同裝置間使用時，請使用GitHub同步功能</li>
                         <li>系統支援所有現代瀏覽器（Chrome, Firefox, Edge, Safari）</li>
                         <li>系統自動備份資料，但建議定期手動匯出重要資料</li>
                         <li>當學生人數超過100人時，系統會啟用效能優化模式</li>
@@ -1327,8 +1331,13 @@
         
         <footer>
             <p>休閒系課程點名系統 &copy; 2023 | 適用於觀光資源概要、領隊與導遊實務、旅遊景點與個案分析課程</p>
-            <p>系統自動追蹤曠課達6堂以上學生並發出通知 | 支援學生管理功能 | 版本 2.2</p>
+            <p>系統自動追蹤曠課達6堂以上學生並發出通知 | 支援學生管理功能 | 版本 2.3 (GitHub同步版)</p>
         </footer>
+    </div>
+
+    <!-- 同步狀態欄 -->
+    <div id="syncStatusBar" style="display: none; position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 5px; font-size: 12px; z-index: 9999;">
+        <i class="fas fa-sync-alt"></i> <span id="syncStatusText">同步中...</span>
     </div>
 
     <!-- 批次刪除確認模態框 -->
@@ -1432,6 +1441,63 @@
         </div>
     </div>
 
+    <!-- GitHub 同步設定模態框 -->
+    <div class="modal-overlay" id="githubSyncModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fab fa-github"></i> GitHub 同步設定</h3>
+                <button class="close-modal" id="closeGithubModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>使用 GitHub Gist 同步點名資料（所有裝置都能存取）</p>
+                
+                <div class="form-group">
+                    <label for="githubToken">GitHub Personal Access Token</label>
+                    <input type="password" id="githubToken" class="form-control" 
+                           placeholder="請輸入 GitHub Token">
+                    <small>
+                        <a href="https://github.com/settings/tokens" target="_blank">
+                            如何建立 Token？
+                        </a>（需要 gist 權限）
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gistId">Gist ID（可選）</label>
+                    <input type="text" id="gistId" class="form-control" 
+                           placeholder="留空將自動建立新的 Gist">
+                    <small>如果已有 Gist，請輸入 ID（網址中的那串字）</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="autoSyncEnabled" checked>
+                        啟用自動同步（每分鐘檢查更新）
+                    </label>
+                </div>
+                
+                <div id="githubSyncStatus" class="checkin-status" style="display:none; margin-top:15px;"></div>
+                
+                <div class="help-section" style="margin-top:15px; font-size:12px;">
+                    <h4><i class="fas fa-info-circle"></i> 使用說明</h4>
+                    <ol>
+                        <li>前往 <a href="https://github.com/settings/tokens" target="_blank">GitHub Token 設定</a></li>
+                        <li>點擊 "Generate new token"</li>
+                        <li>輸入名稱，勾選 "gist" 權限</li>
+                        <li>複製生成的 Token 貼到上方</li>
+                        <li>點擊「測試連接」確認設定正確</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelGithubSettings">取消</button>
+                <button class="btn btn-primary" id="testGithubConnection">測試連接</button>
+                <button class="btn btn-success" id="saveGithubSettings">儲存設定</button>
+                <button class="btn btn-info" id="syncNowBtn">立即同步</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== 系統配置 ====================
         const systemConfig = {
@@ -1452,7 +1518,16 @@
             teacherPassword: '12wq12wq' // 教師密碼（實際使用時請更改）
         };
 
-        // ==================== 課程資料 ====================
+        // ==================== GitHub Gist 同步配置 ====================
+        const gistConfig = {
+            gistId: localStorage.getItem('githubGistId') || null,
+            token: localStorage.getItem('githubToken') || null,
+            filename: 'attendance_data.json',
+            gistDescription: '課程點名系統資料',
+            autoSyncInterval: 60000, // 自動同步間隔（毫秒）
+            enableAutoSync: localStorage.getItem('githubAutoSync') === 'true' || false,
+            syncTimer: null
+        };        // ==================== 課程資料 ====================
         let courses = {
             'tourism-resources': {
                 name: '觀光資源概要',
@@ -1548,6 +1623,10 @@
                 } else {
                     initStudentSystem();
                 }
+                
+                // 初始化GitHub同步
+                initGitHubSync();
+                
             } catch (error) {
                 console.error('系統初始化失敗:', error);
                 showNotification('系統初始化失敗，請重新整理頁面', 'error');
@@ -1623,6 +1702,14 @@
             // 添加登出按鈕
             addLogoutButton();
             
+            // 初始化GitHub同步按鈕
+            initGitHubSyncButtons();
+            
+            // 如果有設定GitHub同步，開始自動同步
+            if (gistConfig.token && gistConfig.gistId && gistConfig.enableAutoSync) {
+                startAutoSync();
+            }
+            
             // 隱藏教師入口
             const teacherAccess = document.getElementById('teacherAccess');
             if (teacherAccess) {
@@ -1636,7 +1723,7 @@
                 updateDataSizeIndicator();
             }, 3000);
             
-            console.log('教師系統初始化完成，版本 2.2');
+            console.log('教師系統初始化完成，版本 2.3');
         }
 
         // ==================== 學生系統初始化 ====================
@@ -1671,7 +1758,7 @@
             });
             
             // 隱藏教師相關的操作按鈕
-            const teacherButtons = document.querySelectorAll('#saveBtn, #resetBtn, #markAllPresentBtn, #exportBtn, #importBtn, #exportExcelBtn, #cleanupBtn, #addStudentBtn, #batchDeleteBtn, #importStudentsBtn');
+            const teacherButtons = document.querySelectorAll('#saveBtn, #resetBtn, #markAllPresentBtn, #exportBtn, #importBtn, #exportExcelBtn, #cleanupBtn, #addStudentBtn, #batchDeleteBtn, #importStudentsBtn, #githubSyncBtn');
             teacherButtons.forEach(btn => {
                 if (btn) btn.style.display = 'none';
             });
@@ -1849,6 +1936,473 @@
             }
         }
 
+        // ==================== GitHub 同步功能 ====================
+        function initGitHubSync() {
+            // 從localStorage讀取設定
+            loadGitHubConfig();
+            
+            // 設定GitHub同步按鈕事件
+            document.getElementById('githubSyncBtn').addEventListener('click', showGitHubSyncModal);
+            
+            // 如果是教師模式且有設定，嘗試載入資料
+            if (isTeacherMode && gistConfig.token && gistConfig.gistId) {
+                // 延遲載入，讓頁面先完成渲染
+                setTimeout(() => {
+                    loadFromGist();
+                }, 2000);
+            }
+        }
+
+        function initGitHubSyncButtons() {
+            // 綁定GitHub同步按鈕事件
+            const githubSyncBtn = document.getElementById('githubSyncBtn');
+            if (githubSyncBtn) {
+                githubSyncBtn.addEventListener('click', showGitHubSyncModal);
+            }
+        }
+
+        function loadGitHubConfig() {
+            // 從localStorage載入設定
+            const savedToken = localStorage.getItem('githubToken');
+            const savedGistId = localStorage.getItem('githubGistId');
+            const savedAutoSync = localStorage.getItem('githubAutoSync');
+            
+            if (savedToken) gistConfig.token = savedToken;
+            if (savedGistId) gistConfig.gistId = savedGistId;
+            if (savedAutoSync) gistConfig.enableAutoSync = savedAutoSync === 'true';
+        }
+
+        function saveGitHubConfig() {
+            // 儲存設定到localStorage
+            if (gistConfig.token) localStorage.setItem('githubToken', gistConfig.token);
+            if (gistConfig.gistId) localStorage.setItem('githubGistId', gistConfig.gistId);
+            localStorage.setItem('githubAutoSync', gistConfig.enableAutoSync.toString());
+        }
+
+        function showGitHubSyncModal() {
+            // 如果已經有模態框，先移除
+            const existingModal = document.getElementById('githubSyncModal');
+            if (existingModal) {
+                existingModal.style.display = 'flex';
+                return;
+            }
+            
+            // 設定表單值
+            const tokenInput = document.getElementById('githubToken');
+            const gistIdInput = document.getElementById('gistId');
+            const autoSyncCheckbox = document.getElementById('autoSyncEnabled');
+            
+            if (tokenInput) tokenInput.value = gistConfig.token || '';
+            if (gistIdInput) gistIdInput.value = gistConfig.gistId || '';
+            if (autoSyncCheckbox) autoSyncCheckbox.checked = gistConfig.enableAutoSync;
+            
+            // 顯示模態框
+            document.getElementById('githubSyncModal').style.display = 'flex';
+            
+            // 綁定事件
+            bindGitHubModalEvents();
+        }
+
+        function bindGitHubModalEvents() {
+            // 關閉按鈕
+            document.getElementById('closeGithubModal').addEventListener('click', function() {
+                document.getElementById('githubSyncModal').style.display = 'none';
+            });
+            
+            document.getElementById('cancelGithubSettings').addEventListener('click', function() {
+                document.getElementById('githubSyncModal').style.display = 'none';
+            });
+            
+            // 點擊外部關閉
+            document.getElementById('githubSyncModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+            
+            // 測試連接
+            document.getElementById('testGithubConnection').addEventListener('click', testGitHubConnection);
+            
+            // 儲存設定
+            document.getElementById('saveGithubSettings').addEventListener('click', saveGitHubSettings);
+            
+            // 立即同步
+            document.getElementById('syncNowBtn').addEventListener('click', function() {
+                syncWithGitHub(true);
+            });
+        }
+
+        async function testGitHubConnection() {
+            const token = document.getElementById('githubToken').value.trim();
+            
+            if (!token) {
+                showGithubStatus('請輸入GitHub Token', 'error');
+                return;
+            }
+            
+            showGithubStatus('測試連接中...', 'info');
+            
+            try {
+                // 測試API連接
+                const response = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showGithubStatus('連接成功！Token有效', 'success');
+                } else {
+                    showGithubStatus(`連接失敗: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showGithubStatus(`連接錯誤: ${error.message}`, 'error');
+            }
+        }
+
+        function saveGitHubSettings() {
+            const token = document.getElementById('githubToken').value.trim();
+            const gistId = document.getElementById('gistId').value.trim();
+            const autoSyncEnabled = document.getElementById('autoSyncEnabled').checked;
+            
+            if (!token) {
+                showGithubStatus('請輸入GitHub Token', 'error');
+                return;
+            }
+            
+            // 更新配置
+            gistConfig.token = token;
+            gistConfig.gistId = gistId || null;
+            gistConfig.enableAutoSync = autoSyncEnabled;
+            
+            // 儲存到localStorage
+            saveGitHubConfig();
+            
+            showGithubStatus('設定已儲存！', 'success');
+            
+            // 如果有Gist ID，載入資料
+            if (gistConfig.token && gistConfig.gistId) {
+                setTimeout(() => {
+                    loadFromGist();
+                    if (gistConfig.enableAutoSync) {
+                        startAutoSync();
+                    }
+                }, 1000);
+            }
+            
+            // 3秒後關閉模態框
+            setTimeout(() => {
+                document.getElementById('githubSyncModal').style.display = 'none';
+            }, 2000);
+        }
+
+        async function syncWithGitHub(showStatus = false) {
+            if (!gistConfig.token) {
+                showNotification('請先設定GitHub Token', 'error');
+                showGitHubSyncModal();
+                return false;
+            }
+            
+            if (showStatus) {
+                showGithubStatus('同步中...', 'info');
+                showSyncStatus('同步中...', 'info');
+            } else {
+                showLoading('同步中...');
+            }
+            
+            try {
+                const dataToSync = {
+                    attendanceData: attendanceData,
+                    courses: courses,
+                    lastUpdated: Date.now(),
+                    syncBy: isTeacherMode ? 'teacher' : 'student',
+                    version: '2.3',
+                    syncTimestamp: new Date().toISOString()
+                };
+                
+                // 壓縮資料以節省空間
+                const compressedData = compressAttendanceData(dataToSync.attendanceData);
+                dataToSync.attendanceData = compressedData;
+                
+                const content = JSON.stringify(dataToSync, null, 2);
+                
+                let result;
+                if (!gistConfig.gistId) {
+                    // 建立新的Gist
+                    result = await createNewGist(content);
+                    gistConfig.gistId = result.id;
+                    saveGitHubConfig();
+                    
+                    // 更新表單中的Gist ID
+                    const gistIdInput = document.getElementById('gistId');
+                    if (gistIdInput) gistIdInput.value = result.id;
+                } else {
+                    // 更新現有的Gist
+                    result = await updateExistingGist(content);
+                }
+                
+                if (showStatus) {
+                    showGithubStatus('同步成功！', 'success');
+                    showSyncStatus('同步成功！', 'success');
+                } else {
+                    hideLoading();
+                    showNotification('資料已同步到GitHub', 'success');
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('同步失敗:', error);
+                if (showStatus) {
+                    showGithubStatus(`同步失敗: ${error.message}`, 'error');
+                    showSyncStatus('同步失敗', 'error');
+                } else {
+                    hideLoading();
+                    showNotification(`同步失敗: ${error.message}`, 'error');
+                }
+                return false;
+            }
+        }
+
+        async function createNewGist(content) {
+            const response = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${gistConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: gistConfig.gistDescription,
+                    public: false,
+                    files: {
+                        [gistConfig.filename]: {
+                            content: content
+                        }
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`建立Gist失敗: ${response.status} - ${errorText}`);
+            }
+            
+            return await response.json();
+        }
+
+        async function updateExistingGist(content) {
+            const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${gistConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: gistConfig.gistDescription,
+                    files: {
+                        [gistConfig.filename]: {
+                            content: content
+                        }
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`更新Gist失敗: ${response.status} - ${errorText}`);
+            }
+            
+            return await response.json();
+        }
+
+        async function loadFromGist() {
+            if (!gistConfig.token || !gistConfig.gistId) {
+                console.log('未設定GitHub同步');
+                return false;
+            }
+            
+            showLoading('從GitHub載入資料中...');
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                    headers: {
+                        'Authorization': `token ${gistConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`載入失敗: ${response.status}`);
+                }
+                
+                const gistData = await response.json();
+                const file = gistData.files[gistConfig.filename];
+                
+                if (!file || !file.content) {
+                    throw new Error('Gist中找不到資料檔案');
+                }
+                
+                const remoteData = JSON.parse(file.content);
+                
+                // 合併本地和遠端資料
+                mergeWithRemoteData(remoteData);
+                
+                hideLoading();
+                showNotification('資料同步完成！', 'success');
+                
+                return true;
+            } catch (error) {
+                console.error('從GitHub載入失敗:', error);
+                hideLoading();
+                showNotification(`載入失敗: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        function mergeWithRemoteData(remoteData) {
+            // 解壓縮遠端資料
+            if (remoteData.attendanceData && isCompressedData(remoteData.attendanceData)) {
+                remoteData.attendanceData = decompressAttendanceData(remoteData.attendanceData);
+            }
+            
+            let mergedCount = 0;
+            
+            // 合併點名資料 - 以時間戳記較新的為準
+            Object.keys(remoteData.attendanceData || {}).forEach(courseId => {
+                if (!attendanceData[courseId]) {
+                    attendanceData[courseId] = {};
+                }
+                
+                for (let week = 1; week <= systemConfig.maxWeeks; week++) {
+                    if (remoteData.attendanceData[courseId] && remoteData.attendanceData[courseId][week]) {
+                        if (!attendanceData[courseId][week]) {
+                            attendanceData[courseId][week] = {};
+                        }
+                        
+                        Object.keys(remoteData.attendanceData[courseId][week]).forEach(studentId => {
+                            const remoteRecord = remoteData.attendanceData[courseId][week][studentId];
+                            const localRecord = attendanceData[courseId][week][studentId];
+                            
+                            // 如果本地沒有記錄，或遠端記錄較新，則使用遠端記錄
+                            if (!localRecord || (remoteRecord.timestamp > localRecord.timestamp)) {
+                                attendanceData[courseId][week][studentId] = remoteRecord;
+                                mergedCount++;
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // 合併課程資料
+            if (remoteData.courses) {
+                Object.keys(remoteData.courses).forEach(courseId => {
+                    if (remoteData.courses[courseId] && remoteData.courses[courseId].students) {
+                        if (!courses[courseId]) {
+                            courses[courseId] = remoteData.courses[courseId];
+                        } else {
+                            // 合併學生列表
+                            remoteData.courses[courseId].students.forEach(remoteStudent => {
+                                const exists = courses[courseId].students.some(
+                                    localStudent => localStudent.id === remoteStudent.id
+                                );
+                                if (!exists) {
+                                    courses[courseId].students.push(remoteStudent);
+                                    mergedCount++;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            
+            // 儲存合併後的資料
+            saveDataToStorage();
+            saveCoursesToStorage();
+            
+            // 更新UI
+            if (mergedCount > 0) {
+                renderStudentTableOptimized();
+                updateAllStats();
+                checkAbsenceWarnings();
+                renderCurrentStudentsList();
+                
+                console.log(`從GitHub合併了${mergedCount}筆資料`);
+            }
+            
+            return mergedCount;
+        }
+
+        function showGithubStatus(message, type) {
+            const statusDiv = document.getElementById('githubSyncStatus');
+            if (!statusDiv) return;
+            
+            statusDiv.textContent = message;
+            statusDiv.className = 'checkin-status';
+            statusDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                statusDiv.classList.add('checkin-success');
+            } else if (type === 'error') {
+                statusDiv.classList.add('checkin-error');
+            } else {
+                statusDiv.classList.add('checkin-success');
+                statusDiv.style.backgroundColor = '#e3f2fd';
+                statusDiv.style.color = '#1565c0';
+                statusDiv.style.borderLeftColor = '#1565c0';
+            }
+        }
+
+        function startAutoSync() {
+            stopAutoSync(); // 先停止現有的定時器
+            
+            if (gistConfig.enableAutoSync && gistConfig.token && gistConfig.gistId && isTeacherMode) {
+                // 每分鐘檢查一次更新
+                gistConfig.syncTimer = setInterval(() => {
+                    if (document.visibilityState === 'visible') {
+                        loadFromGist();
+                    }
+                }, gistConfig.autoSyncInterval);
+                
+                console.log('自動同步已啟動');
+            }
+        }
+
+        function stopAutoSync() {
+            if (gistConfig.syncTimer) {
+                clearInterval(gistConfig.syncTimer);
+                gistConfig.syncTimer = null;
+                console.log('自動同步已停止');
+            }
+        }
+
+        function showSyncStatus(message, type = 'info') {
+            const statusBar = document.getElementById('syncStatusBar');
+            const statusText = document.getElementById('syncStatusText');
+            
+            if (!statusBar || !statusText) return;
+            
+            statusText.textContent = message;
+            statusBar.style.display = 'block';
+            
+            // 根據類型設定顏色
+            if (type === 'success') {
+                statusBar.style.backgroundColor = 'rgba(46, 125, 50, 0.9)';
+            } else if (type === 'error') {
+                statusBar.style.backgroundColor = 'rgba(198, 40, 40, 0.9)';
+            } else if (type === 'warning') {
+                statusBar.style.backgroundColor = 'rgba(255, 152, 0, 0.9)';
+            } else {
+                statusBar.style.backgroundColor = 'rgba(42, 82, 152, 0.9)';
+            }
+            
+            // 3秒後自動隱藏
+            setTimeout(() => {
+                statusBar.style.display = 'none';
+            }, 3000);
+        }
+
         // ==================== 學生管理功能 ====================
         function initStudentManagement() {
             // 新增學生按鈕
@@ -1942,6 +2496,13 @@
             saveDataToStorage();
             saveCoursesToStorage();
             
+            // 如果已設定GitHub同步，自動同步
+            if (gistConfig.token) {
+                setTimeout(() => {
+                    syncWithGitHub();
+                }, 1000);
+            }
+            
             // 清空表單
             document.getElementById('newStudentId').value = '';
             document.getElementById('newStudentName').value = '';
@@ -2000,6 +2561,13 @@
             // 儲存資料
             saveDataToStorage();
             saveCoursesToStorage();
+            
+            // 如果已設定GitHub同步，自動同步
+            if (gistConfig.token) {
+                setTimeout(() => {
+                    syncWithGitHub();
+                }, 1000);
+            }
             
             // 檢查是否要關閉效能模式
             if (courses[currentCourse].students.length <= systemConfig.performanceThreshold && performanceMode) {
@@ -2113,6 +2681,13 @@
             // 儲存資料
             saveDataToStorage();
             saveCoursesToStorage();
+            
+            // 如果已設定GitHub同步，自動同步
+            if (gistConfig.token) {
+                setTimeout(() => {
+                    syncWithGitHub();
+                }, 1000);
+            }
             
             // 更新UI
             renderCurrentStudentsList();
@@ -2379,6 +2954,13 @@
                 saveDataToStorage();
                 saveCoursesToStorage();
                 
+                // 如果已設定GitHub同步，自動同步
+                if (gistConfig.token) {
+                    setTimeout(() => {
+                        syncWithGitHub();
+                    }, 1000);
+                }
+                
                 // 更新UI
                 renderCurrentStudentsList();
                 renderStudentTableOptimized();
@@ -2561,6 +3143,13 @@
                 renderStudentTableOptimized();
                 updateAllStats();
                 checkAbsenceWarnings();
+                
+                // 如果已設定GitHub同步，自動同步
+                if (gistConfig.token) {
+                    setTimeout(() => {
+                        syncWithGitHub();
+                    }, 1000);
+                }
                 
                 // 顯示壓縮訊息
                 if (results.compressionSaved > 0) {
@@ -2835,9 +3424,7 @@
                     compressionInfo.style.display = 'none';
                 }, 10000);
             }
-        }
-
-        // ==================== 模態框功能 ====================
+        }        // ==================== 模態框功能 ====================
         function initModals() {
             // 批次刪除模態框
             document.getElementById('closeBatchDeleteModal').addEventListener('click', function() {
@@ -3009,6 +3596,22 @@
                 localStorage.setItem('attendanceSystemData', dataStr);
                 updateQRCode();
                 updateDataSizeIndicator();
+                
+                // 如果是教師模式且已設定GitHub同步，自動同步
+                if (isTeacherMode && gistConfig.token && gistConfig.gistId) {
+                    // 延遲同步以避免頻繁呼叫
+                    if (!gistConfig.saveSyncTimer) {
+                        gistConfig.saveSyncTimer = setTimeout(async () => {
+                            try {
+                                await syncWithGitHub();
+                            } catch (error) {
+                                console.error('自動同步失敗:', error);
+                            }
+                            gistConfig.saveSyncTimer = null;
+                        }, 3000); // 3秒後同步
+                    }
+                }
+                
                 return true;
             } catch (error) {
                 showNotification('儲存失敗：' + error.message, 'error');
@@ -3137,7 +3740,7 @@
                     data: JSON.parse(JSON.stringify(attendanceData)),
                     courses: JSON.parse(JSON.stringify(courses)),
                     timestamp: Date.now(),
-                    version: '2.2'
+                    version: '2.3'
                 };
                 
                 const backupKey = `attendanceBackup_${Date.now()}`;
@@ -3649,7 +4252,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const qrData = {
-                version: '2.2',
+                version: '2.3',
                 system: 'Attendance System',
                 course: currentCourse,
                 week: currentWeek,
@@ -3820,7 +4423,7 @@
             
             showLoading('報到處理中...');
             
-            setTimeout(() => {
+            setTimeout(async () => {
                 updateAttendanceStatus(courseId, week, studentId, attendanceType, 'student');
                 
                 showCheckinStatus(`${studentName} (${studentId}) 第${week}週 ${attendanceStatus[attendanceType].text} 報到成功！`, 'success');
@@ -3829,6 +4432,17 @@
                 document.getElementById('checkinWeek').value = '';
                 
                 loadCheckinHistory(studentId);
+                
+                // 如果已設定GitHub Token，自動同步
+                if (gistConfig.token) {
+                    try {
+                        await syncWithGitHub();
+                        showCheckinStatus('資料已同步到雲端！', 'success');
+                    } catch (error) {
+                        console.error('自動同步失敗:', error);
+                        showCheckinStatus('同步到雲端失敗，請稍後重試', 'warning');
+                    }
+                }
                 
                 if (isTeacherMode && currentCourse === courseId && currentWeek.toString() === week) {
                     renderStudentTableOptimized();
@@ -4508,8 +5122,17 @@
         // ==================== 頁面生命週期管理 ====================
         window.addEventListener('beforeunload', function(e) {
             stopAutoSave();
+            stopAutoSync(); // 停止自動同步
             saveDataToStorage();
             saveCoursesToStorage();
+            
+            // 如果是教師模式，嘗試最後一次同步
+            if (isTeacherMode && gistConfig.token && gistConfig.gistId) {
+                // 使用同步方式進行最後一次同步
+                syncWithGitHub(false).catch(error => {
+                    console.error('離開前同步失敗:', error);
+                });
+            }
             
             if (isTeacherMode && selectedStudents.length > 0) {
                 e.preventDefault();
