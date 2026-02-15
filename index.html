@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>休閒系課程點名系統 (同步版)</title>
+    <title>休閒系課程點名系統 (穩定版)</title>
     <style>
         * {
             margin: 0;
@@ -345,25 +345,6 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .qr-section {
-            background-color: #f9fbfd;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 25px;
-            text-align: center;
-        }
-        .qr-code-container {
-            margin: 20px auto;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            display: inline-block;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-        #qrCodeCanvas {
-            width: 200px;
-            height: 200px;
         }
         .student-checkin-section {
             margin-top: 30px;
@@ -796,13 +777,7 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script>
-        // 如果 QRCode 未定義，使用備用 CDN
-        if (typeof QRCode === 'undefined') {
-            document.write('<script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"><\/script>');
-        }
-    </script>
+    <!-- QR Code library removed for stability -->
 </head>
 <body>
     <div class="container">
@@ -907,17 +882,7 @@
                         </div>
                     </div>
                     
-                    <div class="qr-section">
-                        <h3><i class="fas fa-qrcode"></i> 本週點名QR Code</h3>
-                        <p>學生可掃描此QR Code進行報到</p>
-                        <div class="qr-code-container">
-                            <canvas id="qrCodeCanvas"></canvas>
-                        </div>
-                        <p class="data-size-indicator" id="dataSizeIndicator">
-                            資料大小: <span id="dataSizeValue">計算中...</span>
-                        </p>
-                        <p class="small-text">掃描後可進入學生報到頁面</p>
-                    </div>
+                    <!-- QR Code section removed for stability -->
                     
                     <div class="notification-panel" id="notificationPanel">
                         <h3><i class="fas fa-exclamation-triangle"></i> 曠課警告</h3>
@@ -1113,10 +1078,9 @@
                         <li><strong>點名操作</strong>：選擇學生（可多選）後點擊相應狀態按鈕進行點名</li>
                         <li><strong>初始狀態</strong>：學生初始狀態為「未報到」，掃描QR Code報到後會變為「出席」</li>
                         <li><strong>學生管理</strong>：在側邊欄學生管理區域可新增、刪除學生，或批次匯入學生資料</li>
-                        <li><strong>QR Code</strong>：每週會自動生成QR Code，學生可掃描報到</li>
                         <li><strong>曠課警告</strong>：系統會自動標記曠課6堂以上的學生</li>
                         <li><strong>匯出資料</strong>：可將點名記錄匯出為JSON或Excel格式</li>
-                        <li><strong>快捷鍵</strong>：數字鍵1-6可快速選擇點名狀態（1:出席, 2:請假, 3:公假, 4:事假, 5:曠課, 6:未報到）</li>
+                        <li><strong>快捷鍵</strong>：數字鍵1-6可快速選擇點名狀態（1:出席, 2:請假, 3:公假, 4:事假, 5:曠課, 6:未報到），Ctrl+S 快速儲存</li>
                         <li><strong>資料清理</strong>：定期使用清理功能移除無效資料</li>
                         <li><strong>GitHub 同步</strong>：使用GitHub Gist進行跨裝置資料同步</li>
                     </ol>
@@ -1185,7 +1149,7 @@
         
         <footer>
             <p>休閒系課程點名系統 &copy; 2023 | 適用於觀光資源概要、領隊與導遊實務、旅遊景點與個案分析課程</p>
-            <p>系統自動追蹤曠課達6堂以上學生並發出通知 | 支援學生管理功能 | 版本 2.3 (GitHub同步版)</p>
+            <p>系統自動追蹤曠課達6堂以上學生並發出通知 | 支援學生管理功能 | 版本 2.4 (穩定版)</p>
         </footer>
     </div>
 
@@ -1341,6 +1305,9 @@
                         <li>複製生成的 Token 貼到上方</li>
                         <li>點擊「測試連接」確認設定正確</li>
                     </ol>
+                    <p style="color: #c62828; margin-top: 8px;">
+                        ⚠️ Token 儲存在瀏覽器，共用電腦請注意安全
+                    </p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1367,7 +1334,7 @@
             maxStudentNameLength: 20,
             performanceThreshold: 100,
             dataCompressionThreshold: 3 * 1024 * 1024,
-            teacherPassword: '12wq12wq'
+            teacherPassword: '12wq12wq' // 請修改為更複雜的密碼
         };
 
         // ==================== GitHub Gist 同步配置 ====================
@@ -1378,8 +1345,13 @@
             gistDescription: '課程點名系統資料',
             autoSyncInterval: 60000,
             enableAutoSync: localStorage.getItem('githubAutoSync') === 'true' || false,
-            syncTimer: null
+            syncTimer: null,
+            saveSyncTimer: null
         };
+
+        // ==================== 全域鎖定變數 ====================
+        let isSyncing = false;          // 同步鎖，防止重複同步
+        let isAddingStudent = false;    // 新增學生鎖，防止重複點擊
 
         // ==================== 課程資料 ====================
         let courses = {
@@ -1452,12 +1424,10 @@
         let attendanceData = {};
         let selectedStudents = [];
         let selectedForDeletion = [];
-        let currentQRCode = null;
         let autoSaveTimer = null;
         let isRendering = false;
-        let virtualScroll = null;
         let performanceMode = false;
-        
+
         // ==================== 角色管理變數 ====================
         let isTeacherMode = false;
 
@@ -1481,6 +1451,7 @@
             }
         }
 
+        // ==================== 角色檢測 ====================
         function detectUserRole() {
             const urlParams = new URLSearchParams(window.location.search);
             const roleFromUrl = urlParams.get('role');
@@ -1512,6 +1483,7 @@
             }
         }
 
+        // ==================== 教師系統初始化 ====================
         function initTeacherSystem() {
             initOfflineDetection();
             cleanInvalidAttendanceData();
@@ -1527,7 +1499,6 @@
             renderStudentTableOptimized();
             updateAllStats();
             checkAbsenceWarnings();
-            updateQRCode();
             initWeekDropdown();
             initKeyboardShortcuts();
             startAutoSave();
@@ -1546,9 +1517,10 @@
                 initMemoryMonitor();
                 updateDataSizeIndicator();
             }, 3000);
-            console.log('教師系統初始化完成，版本 2.3');
+            console.log('教師系統初始化完成，版本 2.4');
         }
 
+        // ==================== 學生系統初始化 ====================
         function initStudentSystem() {
             hideTeacherElements();
             forceStudentTab();
@@ -1566,7 +1538,7 @@
             teacherTabs.forEach(tab => { if (tab) tab.style.display = 'none'; });
             const teacherButtons = document.querySelectorAll('#saveBtn, #resetBtn, #markAllPresentBtn, #exportBtn, #importBtn, #exportExcelBtn, #cleanupBtn, #addStudentBtn, #batchDeleteBtn, #importStudentsBtn, #githubSyncBtn');
             teacherButtons.forEach(btn => { if (btn) btn.style.display = 'none'; });
-            const teacherSections = document.querySelectorAll('.student-management-section, .qr-section, .notification-panel, .attendance-controls');
+            const teacherSections = document.querySelectorAll('.student-management-section, .notification-panel, .attendance-controls');
             teacherSections.forEach(section => { if (section) section.style.display = 'none'; });
             const courseButtons = document.querySelectorAll('#course1Btn, #course2Btn, #course3Btn');
             courseButtons.forEach(btn => { if (btn) btn.style.display = 'none'; });
@@ -1609,7 +1581,10 @@
             logoutBtn.addEventListener('click', function() {
                 if (confirm('確定要登出教師模式嗎？')) {
                     localStorage.removeItem('teacherAuthenticated');
-                    window.location.href = window.location.pathname;
+                    const url = new URL(window.location);
+                    url.search = '';
+                    window.history.replaceState({}, '', url);
+                    window.location.reload();
                 }
             });
             const header = document.querySelector('header');
@@ -1635,6 +1610,7 @@
             }
         }
 
+        // ==================== 效能監控 ====================
         function initPerformanceMonitor() {
             const studentCount = courses[currentCourse]?.students?.length || 0;
             performanceMode = studentCount > systemConfig.performanceThreshold;
@@ -1676,6 +1652,10 @@
             }
         }
 
+        // ==================== 模態框背景滾動鎖定 ====================
+        function lockBodyScroll() { document.body.style.overflow = 'hidden'; }
+        function unlockBodyScroll() { document.body.style.overflow = ''; }
+
         // ==================== GitHub 同步功能 ====================
         function initGitHubSync() {
             loadGitHubConfig();
@@ -1707,29 +1687,40 @@
         }
 
         function showGitHubSyncModal() {
-            const existingModal = document.getElementById('githubSyncModal');
-            if (existingModal) {
-                existingModal.style.display = 'flex';
+            const modal = document.getElementById('githubSyncModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                lockBodyScroll();
+                // 設定表單值
+                document.getElementById('githubToken').value = gistConfig.token || '';
+                document.getElementById('gistId').value = gistConfig.gistId || '';
+                document.getElementById('autoSyncEnabled').checked = gistConfig.enableAutoSync;
                 bindGitHubModalEvents();
-                return;
             }
-            document.getElementById('githubSyncModal').style.display = 'flex';
-            bindGitHubModalEvents();
         }
 
         function bindGitHubModalEvents() {
-            document.getElementById('closeGithubModal').addEventListener('click', function() {
-                document.getElementById('githubSyncModal').style.display = 'none';
-            });
-            document.getElementById('cancelGithubSettings').addEventListener('click', function() {
-                document.getElementById('githubSyncModal').style.display = 'none';
-            });
-            document.getElementById('githubSyncModal').addEventListener('click', function(e) {
-                if (e.target === this) this.style.display = 'none';
-            });
-            document.getElementById('testGithubConnection').addEventListener('click', testGitHubConnection);
-            document.getElementById('saveGithubSettings').addEventListener('click', saveGitHubSettings);
-            document.getElementById('syncNowBtn').addEventListener('click', function() { syncWithGitHub(true); });
+            const modal = document.getElementById('githubSyncModal');
+            const closeBtn = document.getElementById('closeGithubModal');
+            const cancelBtn = document.getElementById('cancelGithubSettings');
+            const testBtn = document.getElementById('testGithubConnection');
+            const saveBtn = document.getElementById('saveGithubSettings');
+            const syncBtn = document.getElementById('syncNowBtn');
+
+            const closeHandler = () => { modal.style.display = 'none'; unlockBodyScroll(); };
+            const cancelHandler = closeHandler;
+            const testHandler = testGitHubConnection;
+            const saveHandler = saveGitHubSettings;
+            const syncHandler = () => syncWithGitHub(true);
+            const outsideClickHandler = (e) => { if (e.target === modal) { modal.style.display = 'none'; unlockBodyScroll(); } };
+
+            // 使用 onclick 直接覆蓋，避免重複綁定
+            closeBtn.onclick = closeHandler;
+            cancelBtn.onclick = cancelHandler;
+            testBtn.onclick = testHandler;
+            saveBtn.onclick = saveHandler;
+            syncBtn.onclick = syncHandler;
+            modal.onclick = outsideClickHandler;
         }
 
         async function testGitHubConnection() {
@@ -1763,71 +1754,220 @@
                     if (gistConfig.enableAutoSync) startAutoSync();
                 }, 1000);
             }
-            setTimeout(() => { document.getElementById('githubSyncModal').style.display = 'none'; }, 2000);
+            setTimeout(() => { 
+                document.getElementById('githubSyncModal').style.display = 'none'; 
+                unlockBodyScroll();
+            }, 2000);
         }
 
         async function syncWithGitHub(showStatus = false) {
+            if (isSyncing) {
+                showNotification('同步正在進行中，請稍候', 'warning');
+                return false;
+            }
             if (!gistConfig.token) {
                 showNotification('請先設定GitHub Token', 'error');
                 showGitHubSyncModal();
                 return false;
             }
-            if (showStatus) { showGithubStatus('同步中...', 'info'); showSyncStatus('同步中...', 'info'); }
-            else showLoading('同步中...');
+            if (!navigator.onLine) {
+                showNotification('目前處於離線模式，無法同步', 'warning');
+                return false;
+            }
+
+            isSyncing = true;
+            if (showStatus) {
+                showGithubStatus('同步中...', 'info');
+                showSyncStatus('同步中...', 'info');
+                const syncBtn = document.getElementById('syncNowBtn');
+                if (syncBtn) syncBtn.disabled = true;
+            } else {
+                showLoading('同步中...');
+            }
+
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const dataToSync = {
                     attendanceData: compressAttendanceData(attendanceData),
                     courses: courses,
                     lastUpdated: Date.now(),
                     syncBy: isTeacherMode ? 'teacher' : 'student',
-                    version: '2.3',
+                    version: '2.4',
                     syncTimestamp: new Date().toISOString()
                 };
-                const content = JSON.stringify(dataToSync, null, 2);
+                let content = JSON.stringify(dataToSync, null, 2);
+
                 let result;
                 if (!gistConfig.gistId) {
-                    result = await createNewGist(content);
+                    result = await createNewGistWithRetry(content, controller.signal);
                     gistConfig.gistId = result.id;
                     saveGitHubConfig();
                     const gistIdInput = document.getElementById('gistId');
                     if (gistIdInput) gistIdInput.value = result.id;
                 } else {
-                    result = await updateExistingGist(content);
+                    try {
+                        result = await updateExistingGist(content, controller.signal);
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            throw new Error('同步超時，請稍後重試');
+                        }
+                        const status = error.message.match(/\d{3}/)?.[0];
+                        if (status === '409') {
+                            console.warn('檢測到 Gist 衝突，嘗試合併...');
+                            const merged = await mergeWithRemoteGist(controller.signal);
+                            if (merged) {
+                                const newDataToSync = {
+                                    attendanceData: compressAttendanceData(attendanceData),
+                                    courses: courses,
+                                    lastUpdated: Date.now(),
+                                    syncBy: isTeacherMode ? 'teacher' : 'student',
+                                    version: '2.4',
+                                    syncTimestamp: new Date().toISOString()
+                                };
+                                content = JSON.stringify(newDataToSync, null, 2);
+                                result = await updateExistingGist(content, controller.signal);
+                            } else {
+                                result = await recreateGist(content, controller.signal);
+                            }
+                        } else if (status === '404') {
+                            result = await recreateGist(content, controller.signal);
+                        } else if (status === '403') {
+                            throw new Error('權限不足，請檢查 Token 是否具備 gist 權限');
+                        } else {
+                            throw error;
+                        }
+                    }
                 }
-                if (showStatus) { showGithubStatus('同步成功！', 'success'); showSyncStatus('同步成功！', 'success'); }
-                else { hideLoading(); showNotification('資料已同步到GitHub', 'success'); }
+
+                clearTimeout(timeoutId);
+                if (showStatus) {
+                    showGithubStatus('同步成功！', 'success');
+                    showSyncStatus('同步成功！', 'success');
+                } else {
+                    hideLoading();
+                    showNotification('資料已同步到GitHub', 'success');
+                }
                 return true;
             } catch (error) {
                 console.error('同步失敗:', error);
-                if (showStatus) { showGithubStatus(`同步失敗: ${error.message}`, 'error'); showSyncStatus('同步失敗', 'error'); }
-                else { hideLoading(); showNotification(`同步失敗: ${error.message}`, 'error'); }
+                const friendlyMsg = error.message.includes('超時') ? '同步超時，請檢查網路後重試' :
+                                    error.message.includes('403') ? '權限錯誤，請重新設定 Token' :
+                                    error.message.includes('409') ? '資料衝突，已自動處理，請重試一次' :
+                                    `同步失敗: ${error.message}`;
+                if (showStatus) {
+                    showGithubStatus(friendlyMsg, 'error');
+                    showSyncStatus('同步失敗', 'error');
+                } else {
+                    hideLoading();
+                    showNotification(friendlyMsg, 'error');
+                }
+                return false;
+            } finally {
+                isSyncing = false;
+                if (showStatus) {
+                    const syncBtn = document.getElementById('syncNowBtn');
+                    if (syncBtn) syncBtn.disabled = false;
+                }
+            }
+        }
+
+        async function createNewGist(content, signal) {
+            const response = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${gistConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: gistConfig.gistDescription,
+                    public: false,
+                    files: { [gistConfig.filename]: { content } }
+                }),
+                signal
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`建立Gist失敗: ${response.status} - ${errorText}`);
+            }
+            return await response.json();
+        }
+
+        async function createNewGistWithRetry(content, signal, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    return await createNewGist(content, signal);
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+                }
+            }
+        }
+
+        async function updateExistingGist(content, signal) {
+            const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${gistConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ files: { [gistConfig.filename]: { content } } }),
+                signal
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`更新Gist失敗: ${response.status} - ${errorText}`);
+            }
+            return await response.json();
+        }        async function mergeWithRemoteGist(signal) {
+            try {
+                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' },
+                    signal
+                });
+                if (!response.ok) return false;
+                const gistData = await response.json();
+                const file = gistData.files[gistConfig.filename];
+                if (!file || !file.content) return false;
+                const remoteData = JSON.parse(file.content);
+                mergeWithRemoteData(remoteData);
+                return true;
+            } catch (error) {
+                console.error('合併遠端資料失敗:', error);
                 return false;
             }
         }
 
-        async function createNewGist(content) {
-            const response = await fetch('https://api.github.com/gists', {
-                method: 'POST',
-                headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description: gistConfig.gistDescription, public: false, files: { [gistConfig.filename]: { content } } })
-            });
-            if (!response.ok) { const errorText = await response.text(); throw new Error(`建立Gist失敗: ${response.status} - ${errorText}`); }
-            return await response.json();
+        async function recreateGist(content, signal) {
+            if (gistConfig.gistId) {
+                try {
+                    await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `token ${gistConfig.token}` },
+                        signal
+                    });
+                } catch (e) { /* 忽略 */ }
+            }
+            const newGist = await createNewGist(content, signal);
+            gistConfig.gistId = newGist.id;
+            saveGitHubConfig();
+            const gistIdInput = document.getElementById('gistId');
+            if (gistIdInput) gistIdInput.value = newGist.id;
+            return newGist;
         }
 
-        async function updateExistingGist(content) {
-            const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ files: { [gistConfig.filename]: { content } } })
-            });
-            if (!response.ok) { const errorText = await response.text(); throw new Error(`更新Gist失敗: ${response.status} - ${errorText}`); }
-            return await response.json();
-        }
-
-        async function loadFromGist() {
-            if (!gistConfig.token || !gistConfig.gistId) { console.log('未設定GitHub同步'); return false; }
-            showLoading('從GitHub載入資料中...');
+        async function loadFromGist(showNotification = true) {
+            if (isSyncing) return false;
+            isSyncing = true;
+            if (!gistConfig.token || !gistConfig.gistId) {
+                isSyncing = false;
+                console.log('未設定GitHub同步');
+                return false;
+            }
+            if (showNotification) showLoading('從GitHub載入資料中...');
             try {
                 const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
                     headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
@@ -1838,14 +1978,20 @@
                 if (!file || !file.content) throw new Error('Gist中找不到資料檔案');
                 const remoteData = JSON.parse(file.content);
                 mergeWithRemoteData(remoteData);
-                hideLoading();
-                showNotification('資料同步完成！', 'success');
+                if (showNotification) {
+                    hideLoading();
+                    showNotification('資料同步完成！', 'success');
+                }
                 return true;
             } catch (error) {
                 console.error('從GitHub載入失敗:', error);
-                hideLoading();
-                showNotification(`載入失敗: ${error.message}`, 'error');
+                if (showNotification) {
+                    hideLoading();
+                    showNotification(`載入失敗: ${error.message}`, 'error');
+                }
                 return false;
+            } finally {
+                isSyncing = false;
             }
         }
 
@@ -1873,13 +2019,19 @@
             if (remoteData.courses) {
                 Object.keys(remoteData.courses).forEach(courseId => {
                     if (remoteData.courses[courseId] && remoteData.courses[courseId].students) {
-                        if (!courses[courseId]) courses[courseId] = remoteData.courses[courseId];
-                        else {
-                            remoteData.courses[courseId].students.forEach(remoteStudent => {
-                                const exists = courses[courseId].students.some(localStudent => localStudent.id === remoteStudent.id);
-                                if (!exists) { courses[courseId].students.push(remoteStudent); mergedCount++; }
-                            });
+                        if (!courses[courseId]) {
+                            courses[courseId] = {
+                                name: remoteData.courses[courseId].name,
+                                students: []
+                            };
                         }
+                        remoteData.courses[courseId].students.forEach(remoteStudent => {
+                            const exists = courses[courseId].students.some(localStudent => localStudent.id === remoteStudent.id);
+                            if (!exists) {
+                                courses[courseId].students.push(remoteStudent);
+                                mergedCount++;
+                            }
+                        });
                     }
                 });
             }
@@ -1915,7 +2067,173 @@
             stopAutoSync();
             if (gistConfig.enableAutoSync && gistConfig.token && gistConfig.gistId && isTeacherMode) {
                 gistConfig.syncTimer = setInterval(() => {
-                    if (document.visibilityState === 'visible') loadFromGist();
+                    if (document.visibilityState === 'visible') loadFromGist(false);
+                }, gistConfig.autoSyncInterval);
+                console.log('自動同步已啟動');
+            }
+        }
+
+        function stopAutoSync() {
+            if (gistConfig.syncTimer) { clearInterval(gistConfig.syncTimer); gistConfig.syncTimer = null; console.log('自動同步已停止'); }
+        }
+
+        function showSyncStatus(message, type = 'info') {
+            const statusBar = document.getElementById('syncStatusBar');
+            const statusText = document.getElementById('syncStatusText');
+            if (!statusBar || !statusText) return;
+            statusText.textContent = message;
+            statusBar.style.display = 'block';
+            if (type === 'success') statusBar.style.backgroundColor = 'rgba(46, 125, 50, 0.9)';
+            else if (type === 'error') statusBar.style.backgroundColor = 'rgba(198, 40, 40, 0.9)';
+            else if (type === 'warning') statusBar.style.backgroundColor = 'rgba(255, 152, 0, 0.9)';
+            else statusBar.style.backgroundColor = 'rgba(42, 82, 152, 0.9)';
+            setTimeout(() => { statusBar.style.display = 'none'; }, 3000);
+        }        async function mergeWithRemoteGist(signal) {
+            try {
+                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' },
+                    signal
+                });
+                if (!response.ok) return false;
+                const gistData = await response.json();
+                const file = gistData.files[gistConfig.filename];
+                if (!file || !file.content) return false;
+                const remoteData = JSON.parse(file.content);
+                mergeWithRemoteData(remoteData);
+                return true;
+            } catch (error) {
+                console.error('合併遠端資料失敗:', error);
+                return false;
+            }
+        }
+
+        async function recreateGist(content, signal) {
+            if (gistConfig.gistId) {
+                try {
+                    await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `token ${gistConfig.token}` },
+                        signal
+                    });
+                } catch (e) { /* 忽略 */ }
+            }
+            const newGist = await createNewGist(content, signal);
+            gistConfig.gistId = newGist.id;
+            saveGitHubConfig();
+            const gistIdInput = document.getElementById('gistId');
+            if (gistIdInput) gistIdInput.value = newGist.id;
+            return newGist;
+        }
+
+        async function loadFromGist(showNotification = true) {
+            if (isSyncing) return false;
+            isSyncing = true;
+            if (!gistConfig.token || !gistConfig.gistId) {
+                isSyncing = false;
+                console.log('未設定GitHub同步');
+                return false;
+            }
+            if (showNotification) showLoading('從GitHub載入資料中...');
+            try {
+                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
+                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!response.ok) throw new Error(`載入失敗: ${response.status}`);
+                const gistData = await response.json();
+                const file = gistData.files[gistConfig.filename];
+                if (!file || !file.content) throw new Error('Gist中找不到資料檔案');
+                const remoteData = JSON.parse(file.content);
+                mergeWithRemoteData(remoteData);
+                if (showNotification) {
+                    hideLoading();
+                    showNotification('資料同步完成！', 'success');
+                }
+                return true;
+            } catch (error) {
+                console.error('從GitHub載入失敗:', error);
+                if (showNotification) {
+                    hideLoading();
+                    showNotification(`載入失敗: ${error.message}`, 'error');
+                }
+                return false;
+            } finally {
+                isSyncing = false;
+            }
+        }
+
+        function mergeWithRemoteData(remoteData) {
+            if (remoteData.attendanceData && isCompressedData(remoteData.attendanceData)) {
+                remoteData.attendanceData = decompressAttendanceData(remoteData.attendanceData);
+            }
+            let mergedCount = 0;
+            Object.keys(remoteData.attendanceData || {}).forEach(courseId => {
+                if (!attendanceData[courseId]) attendanceData[courseId] = {};
+                for (let week = 1; week <= systemConfig.maxWeeks; week++) {
+                    if (remoteData.attendanceData[courseId] && remoteData.attendanceData[courseId][week]) {
+                        if (!attendanceData[courseId][week]) attendanceData[courseId][week] = {};
+                        Object.keys(remoteData.attendanceData[courseId][week]).forEach(studentId => {
+                            const remoteRecord = remoteData.attendanceData[courseId][week][studentId];
+                            const localRecord = attendanceData[courseId][week][studentId];
+                            if (!localRecord || (remoteRecord.timestamp > localRecord.timestamp)) {
+                                attendanceData[courseId][week][studentId] = remoteRecord;
+                                mergedCount++;
+                            }
+                        });
+                    }
+                }
+            });
+            if (remoteData.courses) {
+                Object.keys(remoteData.courses).forEach(courseId => {
+                    if (remoteData.courses[courseId] && remoteData.courses[courseId].students) {
+                        if (!courses[courseId]) {
+                            courses[courseId] = {
+                                name: remoteData.courses[courseId].name,
+                                students: []
+                            };
+                        }
+                        remoteData.courses[courseId].students.forEach(remoteStudent => {
+                            const exists = courses[courseId].students.some(localStudent => localStudent.id === remoteStudent.id);
+                            if (!exists) {
+                                courses[courseId].students.push(remoteStudent);
+                                mergedCount++;
+                            }
+                        });
+                    }
+                });
+            }
+            saveDataToStorage();
+            saveCoursesToStorage();
+            if (mergedCount > 0) {
+                renderStudentTableOptimized();
+                updateAllStats();
+                checkAbsenceWarnings();
+                renderCurrentStudentsList();
+                console.log(`從GitHub合併了${mergedCount}筆資料`);
+            }
+            return mergedCount;
+        }
+
+        function showGithubStatus(message, type) {
+            const statusDiv = document.getElementById('githubSyncStatus');
+            if (!statusDiv) return;
+            statusDiv.textContent = message;
+            statusDiv.className = 'checkin-status';
+            statusDiv.style.display = 'block';
+            if (type === 'success') statusDiv.classList.add('checkin-success');
+            else if (type === 'error') statusDiv.classList.add('checkin-error');
+            else {
+                statusDiv.classList.add('checkin-success');
+                statusDiv.style.backgroundColor = '#e3f2fd';
+                statusDiv.style.color = '#1565c0';
+                statusDiv.style.borderLeftColor = '#1565c0';
+            }
+        }
+
+        function startAutoSync() {
+            stopAutoSync();
+            if (gistConfig.enableAutoSync && gistConfig.token && gistConfig.gistId && isTeacherMode) {
+                gistConfig.syncTimer = setInterval(() => {
+                    if (document.visibilityState === 'visible') loadFromGist(false);
                 }, gistConfig.autoSyncInterval);
                 console.log('自動同步已啟動');
             }
@@ -1951,13 +2269,15 @@
 
         function addStudent() {
             if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
+            if (isAddingStudent) return;
+            isAddingStudent = true;
             const studentId = document.getElementById('newStudentId').value.trim();
             const studentName = document.getElementById('newStudentName').value.trim();
-            if (!studentId || !studentName) { showNotification('請填寫學號和姓名', 'error'); return; }
-            if (!systemConfig.studentIdPattern.test(studentId)) { showNotification('學號格式無效，請使用英數字、橫線或底線', 'error'); return; }
-            if (studentName.length > systemConfig.maxStudentNameLength) { showNotification(`姓名太長，請勿超過${systemConfig.maxStudentNameLength}個字元`, 'error'); return; }
-            if (courses[currentCourse].students.find(s => s.id === studentId)) { showNotification(`學號 ${studentId} 已存在`, 'error'); return; }
-            if (courses[currentCourse].students.length >= systemConfig.maxStudentsPerCourse) { showNotification(`學生人數已達上限 (${systemConfig.maxStudentsPerCourse}人)`, 'error'); return; }
+            if (!studentId || !studentName) { showNotification('請填寫學號和姓名', 'error'); isAddingStudent = false; return; }
+            if (!systemConfig.studentIdPattern.test(studentId)) { showNotification('學號格式無效，請使用英數字、橫線或底線', 'error'); isAddingStudent = false; return; }
+            if (studentName.length > systemConfig.maxStudentNameLength) { showNotification(`姓名太長，請勿超過${systemConfig.maxStudentNameLength}個字元`, 'error'); isAddingStudent = false; return; }
+            if (courses[currentCourse].students.find(s => s.id === studentId)) { showNotification(`學號 ${studentId} 已存在`, 'error'); isAddingStudent = false; return; }
+            if (courses[currentCourse].students.length >= systemConfig.maxStudentsPerCourse) { showNotification(`學生人數已達上限 (${systemConfig.maxStudentsPerCourse}人)`, 'error'); isAddingStudent = false; return; }
             const newStudent = { id: studentId, name: studentName };
             courses[currentCourse].students.push(newStudent);
             if (!attendanceData[currentCourse]) attendanceData[currentCourse] = {};
@@ -1977,7 +2297,7 @@
             renderCurrentStudentsList();
             renderStudentTableOptimized();
             updateAllStats();
-            updateQRCode();
+            isAddingStudent = false;
             showNotification(`已新增學生 ${studentName} (${studentId})`, 'success');
         }
 
@@ -2016,7 +2336,7 @@
                 selectedStudents.forEach(studentId => {
                     const studentName = getStudentName(studentId);
                     const listItem = document.createElement('div');
-                    listItem.className = 'student-item';
+                    listItem.setAttribute('data-student-id', studentId);
                     listItem.innerHTML = `<div class="student-info"><span class="student-id">${studentId}</span><span class="student-name">${studentName}</span></div>`;
                     batchDeleteList.appendChild(listItem);
                 });
@@ -2024,20 +2344,23 @@
                 courses[currentCourse].students.forEach(student => {
                     selectedForDeletion.push(student.id);
                     const listItem = document.createElement('div');
-                    listItem.className = 'student-item';
+                    listItem.setAttribute('data-student-id', student.id);
                     listItem.innerHTML = `<div class="student-info"><span class="student-id">${student.id}</span><span class="student-name">${student.name}</span></div>`;
                     batchDeleteList.appendChild(listItem);
                 });
             }
             document.getElementById('batchDeleteModal').style.display = 'flex';
+            lockBodyScroll();
         }
 
         function confirmBatchDelete() {
             if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-            if (selectedForDeletion.length === 0) { showNotification('沒有選取要刪除的學生', 'error'); return; }
-            const deleteCount = selectedForDeletion.length;
+            const items = document.querySelectorAll('#batchDeleteList > div[data-student-id]');
+            const idsToDelete = Array.from(items).map(div => div.getAttribute('data-student-id'));
+            if (idsToDelete.length === 0) { showNotification('沒有選取要刪除的學生', 'error'); return; }
+            const deleteCount = idsToDelete.length;
             showLoading(`正在刪除 ${deleteCount} 位學生...`);
-            selectedForDeletion.forEach(studentId => {
+            idsToDelete.forEach(studentId => {
                 const studentIndex = courses[currentCourse].students.findIndex(s => s.id === studentId);
                 if (studentIndex > -1) courses[currentCourse].students.splice(studentIndex, 1);
                 if (attendanceData[currentCourse]) {
@@ -2047,7 +2370,6 @@
                 }
             });
             selectedStudents = [];
-            selectedForDeletion = [];
             if (courses[currentCourse].students.length <= systemConfig.performanceThreshold && performanceMode) performanceMode = false;
             saveDataToStorage();
             saveCoursesToStorage();
@@ -2057,6 +2379,7 @@
             updateAllStats();
             checkAbsenceWarnings();
             document.getElementById('batchDeleteModal').style.display = 'none';
+            unlockBodyScroll();
             hideLoading();
             showNotification(`已刪除 ${deleteCount} 位學生`, 'success');
         }
@@ -2066,6 +2389,7 @@
             document.getElementById('importData').value = '';
             document.getElementById('importPreview').style.display = 'none';
             document.getElementById('importStudentsModal').style.display = 'flex';
+            lockBodyScroll();
         }
 
         function previewImport() {
@@ -2188,6 +2512,7 @@
                 updateAllStats();
                 checkAbsenceWarnings();
                 document.getElementById('importStudentsModal').style.display = 'none';
+                unlockBodyScroll();
                 hideLoading();
                 let message = `成功處理 ${importedStudents.length} 位學生`;
                 if (addedCount > 0) message += ` (新增: ${addedCount}`;
@@ -2248,6 +2573,7 @@
             document.getElementById('estimatedSpace').textContent = formatBytes(estimatedSpace);
             document.getElementById('cleanupResults').style.display = 'none';
             document.getElementById('cleanupModal').style.display = 'flex';
+            lockBodyScroll();
         }
 
         function analyzeCleanup() {
@@ -2280,6 +2606,8 @@
                 checkAbsenceWarnings();
                 if (gistConfig.token) setTimeout(() => syncWithGitHub(), 1000);
                 if (results.compressionSaved > 0) showCompressionInfo(`資料已壓縮，節省 ${formatBytes(results.compressionSaved)} 空間`);
+                document.getElementById('cleanupModal').style.display = 'none';
+                unlockBodyScroll();
                 hideLoading();
                 showNotification(`清理完成，釋放 ${formatBytes(results.spaceFreed)} 空間`, 'success');
             }, 800);
@@ -2357,7 +2685,9 @@
                 saveDataToStorage();
             }
             return results;
-        }        function compressAttendanceData(data) {
+        }
+
+        function compressAttendanceData(data) {
             const compressed = {};
             Object.keys(data).forEach(courseId => {
                 compressed[courseId] = {};
@@ -2435,20 +2765,22 @@
 
         // ==================== 模態框功能 ====================
         function initModals() {
-            document.getElementById('closeBatchDeleteModal').addEventListener('click', function() { document.getElementById('batchDeleteModal').style.display = 'none'; });
-            document.getElementById('cancelBatchDelete').addEventListener('click', function() { document.getElementById('batchDeleteModal').style.display = 'none'; });
+            document.getElementById('closeBatchDeleteModal').addEventListener('click', function() { document.getElementById('batchDeleteModal').style.display = 'none'; unlockBodyScroll(); });
+            document.getElementById('cancelBatchDelete').addEventListener('click', function() { document.getElementById('batchDeleteModal').style.display = 'none'; unlockBodyScroll(); });
             document.getElementById('confirmBatchDelete').addEventListener('click', confirmBatchDelete);
-            document.getElementById('batchDeleteModal').addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
-            document.getElementById('closeImportModal').addEventListener('click', function() { document.getElementById('importStudentsModal').style.display = 'none'; });
-            document.getElementById('cancelImport').addEventListener('click', function() { document.getElementById('importStudentsModal').style.display = 'none'; });
+            document.getElementById('batchDeleteModal').addEventListener('click', function(e) { if (e.target === this) { this.style.display = 'none'; unlockBodyScroll(); } });
+
+            document.getElementById('closeImportModal').addEventListener('click', function() { document.getElementById('importStudentsModal').style.display = 'none'; unlockBodyScroll(); });
+            document.getElementById('cancelImport').addEventListener('click', function() { document.getElementById('importStudentsModal').style.display = 'none'; unlockBodyScroll(); });
             document.getElementById('previewImport').addEventListener('click', previewImport);
             document.getElementById('confirmImport').addEventListener('click', confirmImport);
-            document.getElementById('importStudentsModal').addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
-            document.getElementById('closeCleanupModal').addEventListener('click', function() { document.getElementById('cleanupModal').style.display = 'none'; });
-            document.getElementById('cancelCleanup').addEventListener('click', function() { document.getElementById('cleanupModal').style.display = 'none'; });
+            document.getElementById('importStudentsModal').addEventListener('click', function(e) { if (e.target === this) { this.style.display = 'none'; unlockBodyScroll(); } });
+
+            document.getElementById('closeCleanupModal').addEventListener('click', function() { document.getElementById('cleanupModal').style.display = 'none'; unlockBodyScroll(); });
+            document.getElementById('cancelCleanup').addEventListener('click', function() { document.getElementById('cleanupModal').style.display = 'none'; unlockBodyScroll(); });
             document.getElementById('analyzeCleanup').addEventListener('click', analyzeCleanup);
             document.getElementById('confirmCleanup').addEventListener('click', confirmCleanup);
-            document.getElementById('cleanupModal').addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
+            document.getElementById('cleanupModal').addEventListener('click', function(e) { if (e.target === this) { this.style.display = 'none'; unlockBodyScroll(); } });
         }
 
         // ==================== 資料管理函數 ====================
@@ -2501,17 +2833,25 @@
                 let dataToSave = attendanceData;
                 if (dataSize > systemConfig.dataCompressionThreshold) dataToSave = compressAttendanceData(attendanceData);
                 const dataStr = JSON.stringify(dataToSave);
-                if (dataStr.length * 2 > 4.5 * 1024 * 1024) { showNotification('資料量過大，建議先匯出備份並清理資料', 'error'); return false; }
+                if (dataStr.length * 2 > 4.5 * 1024 * 1024) {
+                    showNotification('資料量過大，建議先匯出備份並清理資料', 'error');
+                    return false;
+                }
                 localStorage.setItem('attendanceSystemData', dataStr);
-                updateQRCode();
                 updateDataSizeIndicator();
                 if (isTeacherMode && gistConfig.token && gistConfig.gistId) {
                     if (!gistConfig.saveSyncTimer) {
-                        gistConfig.saveSyncTimer = setTimeout(async () => { try { await syncWithGitHub(); } catch (error) { console.error('自動同步失敗:', error); } gistConfig.saveSyncTimer = null; }, 3000);
+                        gistConfig.saveSyncTimer = setTimeout(async () => {
+                            try { await syncWithGitHub(); } catch (error) { console.error('自動同步失敗:', error); }
+                            gistConfig.saveSyncTimer = null;
+                        }, 3000);
                     }
                 }
                 return true;
-            } catch (error) { showNotification('儲存失敗：' + error.message, 'error'); return false; }
+            } catch (error) {
+                showNotification('儲存失敗：' + error.message, 'error');
+                return false;
+            }
         }
 
         function validateAttendanceData(data) {
@@ -2530,13 +2870,13 @@
                     return data;
                 }
                 return { status: 'unchecked', timestamp: Date.now(), updatedBy: 'system', date: new Date().toISOString().split('T')[0] };
-            } catch (error) { console.error('獲取點名資料時發生錯誤:', error); return { status: 'unchecked', timestamp: Date.now(), updatedBy: 'system', date: new Date().toISOString().split('T')[0] }; }
+            } catch (error) { return { status: 'unchecked', timestamp: Date.now(), updatedBy: 'system', date: new Date().toISOString().split('T')[0] }; }
         }
 
         function updateAttendanceStatus(courseId, week, studentId, status, updatedBy = 'teacher') {
             if (!attendanceData[courseId]) attendanceData[courseId] = {};
             if (!attendanceData[courseId][week]) attendanceData[courseId][week] = {};
-            attendanceData[courseId][week][studentId] = { status: status, timestamp: Date.now(), updatedBy: updatedBy, date: new Date().toISOString().split('T')[0] };
+            attendanceData[courseId][week][studentId] = { status, timestamp: Date.now(), updatedBy, date: new Date().toISOString().split('T')[0] };
             saveDataToStorage();
             return true;
         }
@@ -2567,7 +2907,7 @@
         function createDataBackup() {
             if (!systemConfig.enableBackup) return;
             try {
-                const backup = { data: JSON.parse(JSON.stringify(attendanceData)), courses: JSON.parse(JSON.stringify(courses)), timestamp: Date.now(), version: '2.3' };
+                const backup = { data: JSON.parse(JSON.stringify(attendanceData)), courses: JSON.parse(JSON.stringify(courses)), timestamp: Date.now(), version: '2.4' };
                 const backupKey = `attendanceBackup_${Date.now()}`;
                 localStorage.setItem(backupKey, JSON.stringify(backup));
                 cleanupOldBackups();
@@ -2662,24 +3002,21 @@
                     renderStudentTableOptimized();
                     updateAllStats();
                     checkAbsenceWarnings();
-                    updateQRCode();
                 });
                 weekSelector.appendChild(weekBtn);
             }
         }
 
         function initCourseButtons() {
-            document.getElementById('course1Btn').addEventListener('click', function() { switchCourse('tourism-resources'); });
-            document.getElementById('course2Btn').addEventListener('click', function() { switchCourse('tour-guide'); });
-            document.getElementById('course3Btn').addEventListener('click', function() { switchCourse('travel-case'); });
+            document.getElementById('course1Btn').addEventListener('click', () => switchCourse('tourism-resources'));
+            document.getElementById('course2Btn').addEventListener('click', () => switchCourse('tour-guide'));
+            document.getElementById('course3Btn').addEventListener('click', () => switchCourse('travel-case'));
         }
 
         function switchCourse(courseId) {
             if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
             currentCourse = courseId;
-            document.getElementById('course1Btn').className = 'btn btn-secondary';
-            document.getElementById('course2Btn').className = 'btn btn-secondary';
-            document.getElementById('course3Btn').className = 'btn btn-secondary';
+            ['course1Btn','course2Btn','course3Btn'].forEach(id => document.getElementById(id).className = 'btn btn-secondary');
             if (courseId === 'tourism-resources') document.getElementById('course1Btn').className = 'btn btn-primary';
             else if (courseId === 'tour-guide') document.getElementById('course2Btn').className = 'btn btn-primary';
             else if (courseId === 'travel-case') document.getElementById('course3Btn').className = 'btn btn-primary';
@@ -2692,7 +3029,6 @@
             renderStudentTableOptimized();
             updateAllStats();
             checkAbsenceWarnings();
-            updateQRCode();
             renderCurrentStudentsList();
         }
 
@@ -2711,13 +3047,18 @@
             if (students.length === 0) { document.getElementById('studentTable').innerHTML = '<tr><td colspan="6" style="text-align:center;">無學生資料</td></tr>'; isRendering = false; return; }
             if (performanceMode && students.length > 50) renderStudentsInBatches(students, 0, 50);
             else renderAllStudents(students);
+            // 恢復選中狀態
+            selectedStudents.forEach(id => {
+                const row = document.querySelector(`tr[data-student-id="${id}"]`);
+                if (row) row.classList.add('selected');
+            });
             isRendering = false;
         }
 
         function renderStudentsInBatches(students, startIndex, batchSize) {
             const endIndex = Math.min(startIndex + batchSize, students.length);
             const fragment = document.createDocumentFragment();
-            for (let i = startIndex; i < endIndex; i++) { const row = createStudentRow(students[i], i); fragment.appendChild(row); }
+            for (let i = startIndex; i < endIndex; i++) fragment.appendChild(createStudentRow(students[i], i));
             const tableBody = document.getElementById('studentTable');
             if (startIndex === 0) tableBody.innerHTML = '';
             tableBody.appendChild(fragment);
@@ -2727,319 +3068,264 @@
 
         function renderAllStudents(students) {
             const fragment = document.createDocumentFragment();
-            students.forEach((student, index) => { const row = createStudentRow(student, index); fragment.appendChild(row); });
-            const tableBody = document.getElementById('studentTable');
-            tableBody.innerHTML = '';
-            tableBody.appendChild(fragment);
+            students.forEach((student, index) => fragment.appendChild(createStudentRow(student, index)));
+            document.getElementById('studentTable').innerHTML = '';
+            document.getElementById('studentTable').appendChild(fragment);
             updateAllStats();
         }
 
         function createStudentRow(student, index) {
             const row = document.createElement('tr');
+            row.setAttribute('data-student-id', student.id);
             const absentCount = calculateAbsentCount(student.id);
             const currentStatusData = safeGetAttendanceData(currentCourse, currentWeek, student.id);
             const currentStatus = currentStatusData.status || 'unchecked';
-            const statusInfo = attendanceStatus[currentStatus] || attendanceStatus['unchecked'];
-            row.innerHTML = `<td>${index + 1}</td><td>${student.id}</td><td>${student.name}</td><td><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></td><td>${absentCount >= systemConfig.warningThreshold ? `<span class="warning-badge"><i class="fas fa-exclamation-circle"></i> ${absentCount} 次</span>` : `${absentCount} 次`}</td><td><button class="attendance-btn ${statusInfo.badgeClass} select-btn" data-student="${student.id}" style="padding: 5px 10px; font-size: 12px;">選擇</button></td>`;
-            const selectBtn = row.querySelector('.select-btn');
-            selectBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleStudentSelection(student.id, row); });
-            row.addEventListener('click', function(e) { if (!e.target.classList.contains('select-btn') && !e.target.closest('.select-btn')) toggleStudentSelection(student.id, row); });
+            const statusInfo = attendanceStatus[currentStatus] || attendanceStatus.unchecked;
+            row.innerHTML = `<td>${index + 1}</td><td>${student.id}</td><td>${student.name}</td><td><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></td><td>${absentCount >= systemConfig.warningThreshold ? `<span class="warning-badge"><i class="fas fa-exclamation-circle"></i> ${absentCount} 次</span>` : `${absentCount} 次`}</td><td><button class="attendance-btn ${statusInfo.badgeClass} select-btn" data-student="${student.id}" style="padding:5px 10px;font-size:12px;">選擇</button></td>`;
+            row.querySelector('.select-btn').addEventListener('click', e => { e.stopPropagation(); toggleStudentSelection(student.id, row); });
+            row.addEventListener('click', e => { if (!e.target.classList.contains('select-btn') && !e.target.closest('.select-btn')) toggleStudentSelection(student.id, row); });
             return row;
         }
 
         function toggleStudentSelection(studentId, row) {
             if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-            const index = selectedStudents.indexOf(studentId);
-            if (index > -1) { selectedStudents.splice(index, 1); row.classList.remove('selected'); }
+            const idx = selectedStudents.indexOf(studentId);
+            if (idx > -1) { selectedStudents.splice(idx, 1); row.classList.remove('selected'); }
             else { selectedStudents.push(studentId); row.classList.add('selected'); }
         }
 
         // ==================== 統計和計算函數 ====================
         function calculateAbsentCount(studentId) {
-            let absentCount = 0;
+            let cnt = 0;
             if (attendanceData[currentCourse]) {
-                for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                    const statusData = safeGetAttendanceData(currentCourse, week, studentId);
-                    const status = statusData.status || statusData;
-                    if (status === 'absent') absentCount++;
+                for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                    const s = safeGetAttendanceData(currentCourse, w, studentId);
+                    if ((s.status || s) === 'absent') cnt++;
                 }
             }
-            return absentCount;
+            return cnt;
         }
 
         function updateStats() {
-            if (!attendanceData[currentCourse] || !attendanceData[currentCourse][currentWeek]) {
-                document.getElementById('presentCount').textContent = 0;
-                document.getElementById('leaveCount').textContent = 0;
-                document.getElementById('officialCount').textContent = 0;
-                document.getElementById('absentCount').textContent = 0;
-                document.getElementById('uncheckedCount').textContent = 0;
+            if (!attendanceData[currentCourse]?.[currentWeek]) {
+                ['present','leave','official','absent','unchecked'].forEach(id => document.getElementById(id+'Count').textContent = 0);
                 return;
             }
-            const weekData = attendanceData[currentCourse][currentWeek];
-            const counts = { present: 0, leave: 0, official: 0, personal: 0, absent: 0, unchecked: 0 };
-            Object.values(weekData).forEach(item => {
-                const status = typeof item === 'object' ? (item.s || item.status || 'unchecked') : item;
-                if (counts[status] !== undefined) counts[status]++;
+            const wd = attendanceData[currentCourse][currentWeek];
+            const cnt = { present:0, leave:0, official:0, personal:0, absent:0, unchecked:0 };
+            Object.values(wd).forEach(item => {
+                const st = typeof item === 'object' ? (item.s || item.status || 'unchecked') : item;
+                if (cnt[st] !== undefined) cnt[st]++;
             });
-            document.getElementById('presentCount').textContent = counts.present;
-            document.getElementById('leaveCount').textContent = counts.leave;
-            document.getElementById('officialCount').textContent = counts.official;
-            document.getElementById('absentCount').textContent = counts.absent;
-            document.getElementById('uncheckedCount').textContent = counts.unchecked;
+            document.getElementById('presentCount').textContent = cnt.present;
+            document.getElementById('leaveCount').textContent = cnt.leave;
+            document.getElementById('officialCount').textContent = cnt.official;
+            document.getElementById('absentCount').textContent = cnt.absent;
+            document.getElementById('uncheckedCount').textContent = cnt.unchecked;
         }
 
         function updateAllStats() {
             updateStats();
-            if (attendanceData[currentCourse]) {
-                let totalPresent = 0, totalAbsent = 0, totalUnchecked = 0;
-                courses[currentCourse].students.forEach(student => {
-                    for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                        const statusData = safeGetAttendanceData(currentCourse, week, student.id);
-                        const status = statusData.status || statusData;
-                        if (status === 'present') totalPresent++;
-                        if (status === 'absent') totalAbsent++;
-                        if (status === 'unchecked') totalUnchecked++;
-                    }
-                });
-                const totalStats = document.getElementById('totalStats');
-                if (totalStats) totalStats.innerHTML = `<div class="total-stat-card"><div class="total-stat-label">總出席次數</div><div class="total-stat-value">${totalPresent}</div><div class="stat-desc">本課程</div></div><div class="total-stat-card"><div class="total-stat-label">總曠課次數</div><div class="total-stat-value">${totalAbsent}</div><div class="stat-desc">本課程</div></div><div class="total-stat-card"><div class="total-stat-label">總未報到次數</div><div class="total-stat-value">${totalUnchecked}</div><div class="stat-desc">本課程</div></div>`;
-            }
+            if (!attendanceData[currentCourse]) return;
+            let tp = 0, ta = 0, tu = 0;
+            courses[currentCourse].students.forEach(s => {
+                for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                    const st = safeGetAttendanceData(currentCourse, w, s.id).status || safeGetAttendanceData(currentCourse, w, s.id);
+                    if (st === 'present') tp++;
+                    else if (st === 'absent') ta++;
+                    else if (st === 'unchecked') tu++;
+                }
+            });
+            const ts = document.getElementById('totalStats');
+            if (ts) ts.innerHTML = `<div class="total-stat-card"><div class="total-stat-label">總出席</div><div class="total-stat-value">${tp}</div></div><div class="total-stat-card"><div class="total-stat-label">總曠課</div><div class="total-stat-value">${ta}</div></div><div class="total-stat-card"><div class="total-stat-label">總未報到</div><div class="total-stat-value">${tu}</div></div>`;
         }
 
         function checkAbsenceWarnings() {
             if (!isTeacherMode) return;
-            const notificationPanel = document.getElementById('notificationPanel');
-            const warningList = document.getElementById('warningList');
-            warningList.innerHTML = '';
-            let warningStudents = [];
+            const panel = document.getElementById('notificationPanel');
+            const list = document.getElementById('warningList');
+            list.innerHTML = '';
+            const warns = [];
             if (attendanceData[currentCourse]) {
-                courses[currentCourse].students.forEach(student => {
-                    let absentCount = 0;
-                    for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                        const statusData = safeGetAttendanceData(currentCourse, week, student.id);
-                        const status = statusData.status || statusData;
-                        if (status === 'absent') absentCount++;
+                courses[currentCourse].students.forEach(s => {
+                    let cnt = 0;
+                    for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                        const st = safeGetAttendanceData(currentCourse, w, s.id).status || safeGetAttendanceData(currentCourse, w, s.id);
+                        if (st === 'absent') cnt++;
                     }
-                    if (absentCount >= systemConfig.warningThreshold) warningStudents.push({ name: student.name, id: student.id, count: absentCount });
+                    if (cnt >= systemConfig.warningThreshold) warns.push({ name: s.name, id: s.id, cnt });
                 });
             }
-            if (warningStudents.length > 0) {
-                notificationPanel.style.display = 'block';
-                warningStudents.forEach(student => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>${student.name} (${student.id})</strong> - 曠課 ${student.count} 堂`;
-                    warningList.appendChild(li);
-                });
-                document.getElementById('notificationText').textContent = `以下 ${warningStudents.length} 位學生曠課已達${systemConfig.warningThreshold}堂以上，請注意！`;
-            } else notificationPanel.style.display = 'none';
-        }
-
-        // ==================== QR Code功能 ====================
-        function updateQRCode() {
-            if (!isTeacherMode) return;
-            const canvas = document.getElementById('qrCodeCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (typeof QRCode === 'undefined') { console.warn('QRCode 庫未載入，使用 fallback 顯示'); generateFallbackQRCode(); return; }
-            const qrData = { version: '2.3', system: 'Attendance System', course: currentCourse, week: currentWeek, courseName: courses[currentCourse].name, timestamp: Date.now(), url: window.location.origin + window.location.pathname, dataFormat: 'json' };
-            const qrString = JSON.stringify(qrData);
-            try {
-                QRCode.toCanvas(canvas, qrString, { width: 200, margin: 1, color: { dark: '#1e3c72', light: '#ffffff' }, errorCorrectionLevel: 'M' }, function(error) {
-                    if (error) { console.error('QR Code生成錯誤:', error); generateFallbackQRCode(); }
-                });
-            } catch (error) { console.error('QR Code生成異常:', error); generateFallbackQRCode(); }
-        }
-
-        function generateFallbackQRCode() {
-            const canvas = document.getElementById('qrCodeCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#f0f0f0';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#333';
-            ctx.font = '14px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('QR Code載入失敗', canvas.width/2, canvas.height/2 - 10);
-            ctx.font = '12px Arial';
-            ctx.fillText('請手動輸入資訊', canvas.width/2, canvas.height/2 + 10);
+            if (warns.length) {
+                panel.style.display = 'block';
+                warns.forEach(w => list.innerHTML += `<li><strong>${w.name} (${w.id})</strong> - 曠課 ${w.cnt} 堂</li>`);
+                document.getElementById('notificationText').textContent = `以下 ${warns.length} 位學生曠課已達 ${systemConfig.warningThreshold} 堂以上，請注意！`;
+            } else panel.style.display = 'none';
         }
 
         // ==================== 學生報到系統 ====================
         function initCheckinSystem() {
             document.getElementById('submitCheckin').addEventListener('click', submitCheckin);
             document.getElementById('studentId').addEventListener('change', function() {
-                const studentId = this.value.trim();
-                if (studentId) {
-                    let foundStudent = null, foundCourse = null;
-                    for (const courseId in courses) {
-                        const student = courses[courseId].students.find(s => s.id === studentId);
-                        if (student) { foundStudent = student; foundCourse = courseId; break; }
-                    }
-                    if (foundStudent) {
-                        document.getElementById('studentName').value = foundStudent.name;
-                        document.getElementById('checkinCourse').value = foundCourse;
-                        updateWeekDropdown();
-                    }
-                    loadCheckinHistory(studentId);
+                const sid = this.value.trim();
+                if (!sid) return;
+                let found = null, cid = null;
+                for (const id in courses) {
+                    const s = courses[id].students.find(st => st.id === sid);
+                    if (s) { found = s; cid = id; break; }
                 }
+                if (found) {
+                    document.getElementById('studentName').value = found.name;
+                    document.getElementById('checkinCourse').value = cid;
+                    updateWeekDropdown();
+                }
+                loadCheckinHistory(sid);
             });
             document.getElementById('checkinCourse').addEventListener('change', updateWeekDropdown);
         }
 
         function initWeekDropdown() {
-            const weekSelect = document.getElementById('checkinWeek');
-            weekSelect.innerHTML = '<option value="">請選擇週次</option>';
-            for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                const option = document.createElement('option');
-                option.value = week;
-                option.textContent = `第${week}週`;
-                weekSelect.appendChild(option);
+            const sel = document.getElementById('checkinWeek');
+            sel.innerHTML = '<option value="">請選擇週次</option>';
+            for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                const opt = document.createElement('option');
+                opt.value = w;
+                opt.textContent = `第${w}週`;
+                sel.appendChild(opt);
             }
-            weekSelect.value = currentWeek;
+            sel.value = currentWeek;
         }
 
         function updateWeekDropdown() {
-            const courseId = document.getElementById('checkinCourse').value;
-            if (!courseId) return;
-            const weekSelect = document.getElementById('checkinWeek');
-            const currentWeekValue = weekSelect.value;
-            weekSelect.innerHTML = '<option value="">請選擇週次</option>';
-            for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                const option = document.createElement('option');
-                option.value = week;
-                let hasAttendance = false, attendanceStatusText = '未報到';
-                if (attendanceData[courseId] && attendanceData[courseId][week]) {
-                    const weekData = attendanceData[courseId][week];
-                    const students = Object.values(weekData);
-                    if (students.length > 0) {
-                        const checkedStudents = students.filter(item => {
-                            const status = typeof item === 'object' ? (item.s || item.status || 'unchecked') : item;
-                            return status !== 'unchecked';
-                        }).length;
-                        if (checkedStudents > 0) { hasAttendance = true; attendanceStatusText = ` (${checkedStudents}/${courses[courseId].students.length} 已報到)`; }
-                    }
+            const cid = document.getElementById('checkinCourse').value;
+            if (!cid) return;
+            const sel = document.getElementById('checkinWeek');
+            const old = sel.value;
+            sel.innerHTML = '<option value="">請選擇週次</option>';
+            for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                const opt = document.createElement('option');
+                opt.value = w;
+                let extra = '';
+                if (attendanceData[cid]?.[w]) {
+                    const wd = attendanceData[cid][w];
+                    const chk = Object.values(wd).filter(v => (typeof v === 'object' ? (v.s || v.status) : v) !== 'unchecked').length;
+                    if (chk > 0) extra = ` (${chk}/${courses[cid].students.length} 已報到)`;
                 }
-                option.textContent = `第${week}週${hasAttendance ? attendanceStatusText : ''}`;
-                if (week.toString() === currentWeekValue) option.selected = true;
-                weekSelect.appendChild(option);
+                opt.textContent = `第${w}週${extra}`;
+                if (w.toString() === old) opt.selected = true;
+                sel.appendChild(opt);
             }
-            if (!currentWeekValue) weekSelect.value = currentWeek;
+            if (!old) sel.value = currentWeek;
         }
 
         function submitCheckin() {
-            const courseId = document.getElementById('checkinCourse').value;
+            const cid = document.getElementById('checkinCourse').value;
             const week = document.getElementById('checkinWeek').value;
-            const studentId = document.getElementById('studentId').value.trim();
-            const studentName = document.getElementById('studentName').value.trim();
-            const attendanceType = document.getElementById('attendanceType').value;
-            if (!courseId || !week || !studentId || !studentName) { showCheckinStatus('請填寫所有必填欄位', 'error'); return; }
-            const course = courses[courseId];
-            if (!course) { showCheckinStatus('課程不存在', 'error'); return; }
-            const student = course.students.find(s => s.id === studentId && s.name === studentName);
-            if (!student) { showCheckinStatus('學號或姓名錯誤，請確認後重新輸入', 'error'); return; }
-            showLoading('報到處理中...');
+            const sid = document.getElementById('studentId').value.trim();
+            const sname = document.getElementById('studentName').value.trim();
+            const type = document.getElementById('attendanceType').value;
+            if (!cid || !week || !sid || !sname) return showCheckinStatus('請填寫所有欄位', 'error');
+            const course = courses[cid];
+            if (!course) return showCheckinStatus('課程不存在', 'error');
+            const student = course.students.find(s => s.id === sid);
+            if (!student) return showCheckinStatus('學號不存在', 'error');
+            if (student.name !== sname) return showCheckinStatus('姓名與學號不匹配', 'error');
+            showLoading('報到中...');
             setTimeout(async () => {
-                updateAttendanceStatus(courseId, week, studentId, attendanceType, 'student');
-                showCheckinStatus(`${studentName} (${studentId}) 第${week}週 ${attendanceStatus[attendanceType].text} 報到成功！`, 'success');
+                updateAttendanceStatus(cid, week, sid, type, 'student');
+                showCheckinStatus(`${sname} 第${week}週 ${attendanceStatus[type].text} 成功`, 'success');
                 document.getElementById('studentName').value = '';
                 document.getElementById('checkinWeek').value = '';
-                loadCheckinHistory(studentId);
-                if (gistConfig.token) { try { await syncWithGitHub(); showCheckinStatus('資料已同步到雲端！', 'success'); } catch (error) { console.error('自動同步失敗:', error); } }
-                if (isTeacherMode && currentCourse === courseId && currentWeek.toString() === week) {
-                    renderStudentTableOptimized();
-                    updateAllStats();
-                    checkAbsenceWarnings();
-                    initWeekButtons();
+                loadCheckinHistory(sid);
+                if (gistConfig.token && navigator.onLine) try { await syncWithGitHub(); } catch (e) { console.error(e); }
+                if (isTeacherMode && currentCourse === cid && currentWeek.toString() === week) {
+                    renderStudentTableOptimized(); updateAllStats(); checkAbsenceWarnings(); initWeekButtons();
                 }
                 hideLoading();
             }, 300);
         }
 
-        function loadCheckinHistory(studentId) {
-            const container = document.getElementById('checkinHistoryContainer');
-            if (!studentId) { container.innerHTML = '<p>請先輸入學號查看報到記錄</p>'; return; }
-            let history = [];
-            for (const courseId in attendanceData) {
-                if (attendanceData[courseId]) {
-                    for (const week in attendanceData[courseId]) {
-                        if (attendanceData[courseId][week] && attendanceData[courseId][week][studentId]) {
-                            const statusData = attendanceData[courseId][week][studentId];
-                            const status = typeof statusData === 'object' ? (statusData.s || statusData.status || 'unchecked') : statusData;
-                            if (status !== 'unchecked') {
-                                const statusText = attendanceStatus[status] ? attendanceStatus[status].text : '未知';
-                                history.push({ course: courses[courseId] ? courses[courseId].name : courseId, week: week, status: statusText, date: typeof statusData === 'object' ? (statusData.d || statusData.date || '--') : '--' });
-                            }
-                        }
+        function loadCheckinHistory(sid) {
+            const cont = document.getElementById('checkinHistoryContainer');
+            if (!sid) { cont.innerHTML = '<p>請輸入學號查看記錄</p>'; return; }
+            const hist = [];
+            Object.keys(attendanceData).forEach(cid => {
+                if (!attendanceData[cid]) return;
+                Object.keys(attendanceData[cid]).forEach(w => {
+                    const rec = attendanceData[cid][w]?.[sid];
+                    if (!rec) return;
+                    const st = typeof rec === 'object' ? (rec.s || rec.status) : rec;
+                    if (st !== 'unchecked') {
+                        hist.push({
+                            course: courses[cid]?.name || cid,
+                            week: w,
+                            status: attendanceStatus[st]?.text || '未知',
+                            date: typeof rec === 'object' ? (rec.d || rec.date || '--') : '--'
+                        });
                     }
-                }
-            }
-            history.sort((a, b) => parseInt(a.week) - parseInt(b.week));
-            if (history.length === 0) { container.innerHTML = '<p>找不到該學生的報到記錄</p>'; return; }
+                });
+            });
+            hist.sort((a,b) => a.week - b.week);
+            if (!hist.length) { cont.innerHTML = '<p>無報到記錄</p>'; return; }
             let html = '<table><thead><tr><th>課程</th><th>週次</th><th>狀態</th><th>日期</th></tr></thead><tbody>';
-            history.forEach(record => { html += `<tr><td>${record.course}</td><td>第${record.week}週</td><td><span class="status-badge">${record.status}</span></td><td>${record.date}</td></tr>`; });
+            hist.forEach(r => html += `<tr><td>${r.course}</td><td>第${r.week}週</td><td><span class="status-badge">${r.status}</span></td><td>${r.date}</td></tr>`);
             html += '</tbody></table>';
-            container.innerHTML = html;
+            cont.innerHTML = html;
         }
 
         // ==================== 匯出功能 ====================
-        function formatDate(date) { return date.toISOString().split('T')[0]; }
-        function calculateTotalStudents() { let total = 0; Object.values(courses).forEach(c => total += c.students.length); return total; }
+        function formatDate(d) { return d.toISOString().split('T')[0]; }
+        function totalStudents() { return Object.values(courses).reduce((a,c) => a + c.students.length, 0); }
 
         function exportToExcelEnhanced() {
             if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-            showLoading('準備匯出資料...');
+            showLoading('準備匯出...');
             setTimeout(() => {
                 try {
-                    let csvContent = "\uFEFF";
-                    csvContent += `"休閒系課程點名系統報表"\n"匯出時間: ${formatDate(new Date())} ${new Date().toLocaleTimeString()}"\n"課程範圍: 第1週 - 第${systemConfig.maxWeeks}週"\n"總學生數: ${calculateTotalStudents()}"\n\n`;
-                    const courseIds = Object.keys(courses).sort();
-                    let courseIndex = 0;
-                    function processNextCourse() {
-                        if (courseIndex >= courseIds.length) { finalizeExport(csvContent); return; }
-                        const courseId = courseIds[courseIndex];
-                        const courseName = courses[courseId] ? courses[courseId].name : courseId;
-                        showLoading(`處理課程: ${courseName} (${courseIndex + 1}/${courseIds.length})`);
-                        csvContent += `"課程: ${courseName}"\n學號,姓名`;
-                        for (let week = 1; week <= systemConfig.maxWeeks; week++) csvContent += `,第${week}週`;
-                        csvContent += `,曠課次數,總出席次數\n`;
-                        const sortedStudents = [...courses[courseId].students].sort((a, b) => a.id.localeCompare(b.id));
-                        sortedStudents.forEach((student) => {
-                            let absentCount = 0, presentCount = 0;
-                            let rowContent = `"${student.id}","${student.name}"`;
-                            for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                                const statusData = safeGetAttendanceData(courseId, week, student.id);
-                                const status = typeof statusData === 'object' ? (statusData.s || statusData.status || 'unchecked') : statusData;
-                                const statusText = attendanceStatus[status] ? attendanceStatus[status].text : '未報到';
-                                rowContent += `,"${statusText}"`;
-                                if (status === 'absent') absentCount++;
-                                if (status === 'present') presentCount++;
+                    let csv = "\uFEFF";
+                    csv += `"休閒系課程點名系統報表"\n"匯出時間: ${formatDate(new Date())} ${new Date().toLocaleTimeString()}"\n"課程範圍: 第1週 - 第${systemConfig.maxWeeks}週"\n"總學生數: ${totalStudents()}"\n\n`;
+                    const ids = Object.keys(courses).sort();
+                    let idx = 0;
+                    const next = () => {
+                        if (idx >= ids.length) { finalizeExport(csv); return; }
+                        const cid = ids[idx];
+                        const cname = courses[cid]?.name || cid;
+                        showLoading(`處理 ${cname} (${idx+1}/${ids.length})`);
+                        csv += `"課程: ${cname}"\n學號,姓名`;
+                        for (let w = 1; w <= systemConfig.maxWeeks; w++) csv += `,第${w}週`;
+                        csv += `,曠課次數,總出席\n`;
+                        const sorted = [...courses[cid].students].sort((a,b) => a.id.localeCompare(b.id));
+                        sorted.forEach(s => {
+                            let absent = 0, present = 0;
+                            let row = `"${s.id}","${s.name}"`;
+                            for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                                const stData = safeGetAttendanceData(cid, w, s.id);
+                                const st = typeof stData === 'object' ? (stData.s || stData.status) : stData;
+                                row += `,"${attendanceStatus[st]?.text || '未報到'}"`;
+                                if (st === 'absent') absent++;
+                                if (st === 'present') present++;
                             }
-                            rowContent += `,${absentCount},${presentCount}\n`;
-                            csvContent += rowContent;
+                            row += `,${absent},${present}\n`;
+                            csv += row;
                         });
-                        csvContent += "\n";
-                        courseIndex++;
-                        setTimeout(processNextCourse, 10);
-                    }
-                    processNextCourse();
-                } catch (error) { console.error('匯出錯誤:', error); hideLoading(); showNotification('匯出失敗: ' + error.message, 'error'); }
+                        csv += "\n";
+                        idx++;
+                        setTimeout(next, 10);
+                    };
+                    next();
+                } catch (e) { hideLoading(); showNotification('匯出失敗', 'error'); }
             }, 100);
         }
 
-        function finalizeExport(csvContent) {
+        function finalizeExport(csv) {
             try {
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", `點名記錄_${formatDate(new Date())}_${new Date().getTime()}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `點名記錄_${formatDate(new Date())}.csv`;
                 link.click();
-                setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); hideLoading(); showNotification('匯出完成！檔案已下載', 'success'); createDataBackup(); }, 100);
-            } catch (error) { hideLoading(); showNotification('檔案建立失敗: ' + error.message, 'error'); }
+                setTimeout(() => { URL.revokeObjectURL(link.href); hideLoading(); showNotification('匯出完成', 'success'); }, 100);
+            } catch (e) { hideLoading(); showNotification('檔案建立失敗', 'error'); }
         }
 
         // ==================== 事件處理和操作 ====================
@@ -3047,240 +3333,187 @@
             document.querySelectorAll('.attendance-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-                    const status = this.dataset.status;
-                    if (selectedStudents.length === 0) { showNotification('請先選擇學生', 'warning'); return; }
-                    selectedStudents.forEach(studentId => updateAttendanceStatus(currentCourse, currentWeek, studentId, status, 'teacher'));
+                    if (!selectedStudents.length) { showNotification('請先選擇學生', 'warning'); return; }
+                    const st = this.dataset.status;
+                    selectedStudents.forEach(id => updateAttendanceStatus(currentCourse, currentWeek, id, st, 'teacher'));
                     selectedStudents = [];
-                    document.querySelectorAll('.student-list tr.selected').forEach(row => row.classList.remove('selected'));
-                    renderStudentTableOptimized();
-                    updateAllStats();
-                    saveDataToStorage();
-                    checkAbsenceWarnings();
-                    initWeekButtons();
-                    showNotification(`已更新 ${selectedStudents.length} 位學生的狀態`, 'success');
+                    document.querySelectorAll('.student-list tr.selected').forEach(r => r.classList.remove('selected'));
+                    renderStudentTableOptimized(); updateAllStats(); saveDataToStorage(); checkAbsenceWarnings(); initWeekButtons();
+                    showNotification(`已更新狀態`, 'success');
                 });
             });
         }
 
         function initActionButtons() {
-            document.getElementById('saveBtn').addEventListener('click', function() { if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; } if (saveDataToStorage()) showNotification('點名記錄已儲存！', 'success'); });
-            document.getElementById('resetBtn').addEventListener('click', function() {
-                if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-                if (confirm('確定要重設本週所有學生的點名記錄嗎？所有學生將恢復為「未報到」狀態')) {
-                    showLoading('重設中...');
-                    setTimeout(() => {
-                        courses[currentCourse].students.forEach(student => updateAttendanceStatus(currentCourse, currentWeek, student.id, 'unchecked', 'teacher'));
-                        renderStudentTableOptimized();
-                        updateAllStats();
-                        saveDataToStorage();
-                        initWeekButtons();
-                        checkAbsenceWarnings();
-                        hideLoading();
-                        showNotification('本週點名記錄已重設！', 'success');
-                    }, 300);
-                }
-            });
-            document.getElementById('markAllPresentBtn').addEventListener('click', function() {
-                if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-                if (confirm('確定要將本週所有學生標記為「出席」嗎？')) {
-                    showLoading('標記中...');
-                    setTimeout(() => {
-                        courses[currentCourse].students.forEach(student => updateAttendanceStatus(currentCourse, currentWeek, student.id, 'present', 'teacher'));
-                        renderStudentTableOptimized();
-                        updateAllStats();
-                        saveDataToStorage();
-                        initWeekButtons();
-                        checkAbsenceWarnings();
-                        hideLoading();
-                        showNotification('所有學生已標記為出席！', 'success');
-                    }, 300);
-                }
-            });
-            document.getElementById('exportBtn').addEventListener('click', function() {
-                if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-                showLoading('匯出中...');
+            document.getElementById('saveBtn').addEventListener('click', () => { if (saveDataToStorage()) showNotification('已儲存', 'success'); });
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (!confirm('重設本週所有學生為未報到？')) return;
+                showLoading('重設中...');
                 setTimeout(() => {
-                    const dataStr = JSON.stringify(attendanceData);
-                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                    const exportFileDefaultName = `點名記錄_${courses[currentCourse].name}_${formatDate(new Date())}.json`;
-                    const linkElement = document.createElement('a');
-                    linkElement.setAttribute('href', dataUri);
-                    linkElement.setAttribute('download', exportFileDefaultName);
-                    linkElement.click();
-                    hideLoading();
-                    showNotification('點名記錄已匯出！', 'success');
-                }, 500);
+                    courses[currentCourse].students.forEach(s => updateAttendanceStatus(currentCourse, currentWeek, s.id, 'unchecked', 'teacher'));
+                    renderStudentTableOptimized(); updateAllStats(); saveDataToStorage(); initWeekButtons(); checkAbsenceWarnings();
+                    hideLoading(); showNotification('已重設', 'success');
+                }, 300);
             });
-            document.getElementById('importBtn').addEventListener('click', function() {
-                if (!isTeacherMode) { showNotification('學生模式無法執行此操作', 'error'); return; }
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'application/json';
-                input.onchange = function(e) {
+            document.getElementById('markAllPresentBtn').addEventListener('click', () => {
+                if (!confirm('將本週所有學生標記為出席？')) return;
+                showLoading('標記中...');
+                setTimeout(() => {
+                    courses[currentCourse].students.forEach(s => updateAttendanceStatus(currentCourse, currentWeek, s.id, 'present', 'teacher'));
+                    renderStudentTableOptimized(); updateAllStats(); saveDataToStorage(); initWeekButtons(); checkAbsenceWarnings();
+                    hideLoading(); showNotification('已標記', 'success');
+                }, 300);
+            });
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const dataStr = JSON.stringify(attendanceData);
+                const a = document.createElement('a');
+                a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                a.download = `點名記錄_${courses[currentCourse].name}_${formatDate(new Date())}.json`;
+                a.click();
+                showNotification('匯出成功', 'success');
+            });
+            document.getElementById('importBtn').addEventListener('click', () => {
+                const inp = document.createElement('input');
+                inp.type = 'file';
+                inp.accept = 'application/json';
+                inp.onchange = e => {
                     const file = e.target.files[0];
                     const reader = new FileReader();
-                    reader.onload = function() {
+                    reader.onload = () => {
                         showLoading('匯入中...');
                         setTimeout(() => {
                             try {
-                                const importedData = JSON.parse(reader.result);
-                                let dataToImport = importedData;
-                                if (isCompressedData(importedData)) dataToImport = decompressAttendanceData(importedData);
-                                if (!validateAttendanceData(dataToImport)) throw new Error('資料格式不符');
-                                Object.keys(courses).forEach(courseId => {
-                                    if (!dataToImport[courseId]) dataToImport[courseId] = {};
-                                    for (let week = 1; week <= systemConfig.maxWeeks; week++) {
-                                        if (!dataToImport[courseId][week]) dataToImport[courseId][week] = {};
-                                        if (courses[courseId]) {
-                                            courses[courseId].students.forEach(student => {
-                                                if (!dataToImport[courseId][week][student.id]) dataToImport[courseId][week][student.id] = { status: 'unchecked', timestamp: Date.now(), updatedBy: 'system', date: new Date().toISOString().split('T')[0] };
-                                                else if (typeof dataToImport[courseId][week][student.id] === 'string') dataToImport[courseId][week][student.id] = { status: dataToImport[courseId][week][student.id], timestamp: Date.now(), updatedBy: 'system', date: new Date().toISOString().split('T')[0] };
-                                            });
-                                        }
+                                let imported = JSON.parse(reader.result);
+                                if (isCompressedData(imported)) imported = decompressAttendanceData(imported);
+                                if (!validateAttendanceData(imported)) throw new Error('格式不符');
+                                Object.keys(courses).forEach(cid => {
+                                    if (!imported[cid]) imported[cid] = {};
+                                    for (let w = 1; w <= systemConfig.maxWeeks; w++) {
+                                        if (!imported[cid][w]) imported[cid][w] = {};
+                                        courses[cid].students.forEach(s => {
+                                            if (!imported[cid][w][s.id]) imported[cid][w][s.id] = { status: 'unchecked', timestamp: Date.now(), updatedBy: 'system', date: formatDate(new Date()) };
+                                            else if (typeof imported[cid][w][s.id] === 'string')
+                                                imported[cid][w][s.id] = { status: imported[cid][w][s.id], timestamp: Date.now(), updatedBy: 'system', date: formatDate(new Date()) };
+                                        });
                                     }
                                 });
-                                attendanceData = dataToImport;
+                                attendanceData = imported;
                                 saveDataToStorage();
-                                renderStudentTableOptimized();
-                                updateAllStats();
-                                checkAbsenceWarnings();
-                                updateQRCode();
-                                initWeekButtons();
-                                hideLoading();
-                                showNotification('資料匯入成功！', 'success');
-                            } catch (error) { hideLoading(); showNotification('匯入失敗: ' + error.message, 'error'); }
+                                renderStudentTableOptimized(); updateAllStats(); checkAbsenceWarnings(); initWeekButtons();
+                                hideLoading(); showNotification('匯入成功', 'success');
+                            } catch (err) { hideLoading(); showNotification('匯入失敗', 'error'); }
                         }, 500);
                     };
                     reader.readAsText(file);
                 };
-                input.click();
+                inp.click();
             });
             document.getElementById('exportExcelBtn').addEventListener('click', exportToExcelEnhanced);
         }
 
         // ==================== 鍵盤快捷鍵 ====================
         function initKeyboardShortcuts() {
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', e => {
                 if (!isTeacherMode) return;
-                const activeElement = document.activeElement;
-                const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'SELECT' || activeElement.isContentEditable);
+                const active = document.activeElement;
+                const input = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
                 if (e.ctrlKey && e.key === 's') { e.preventDefault(); document.getElementById('saveBtn').click(); }
-                if (document.getElementById('attendance').classList.contains('active') && !isInputFocused) {
-                    switch(e.key) {
-                        case '1': document.querySelector('.attendance-btn.present').click(); break;
-                        case '2': document.querySelector('.attendance-btn.leave').click(); break;
-                        case '3': document.querySelector('.attendance-btn.official').click(); break;
-                        case '4': document.querySelector('.attendance-btn.personal').click(); break;
-                        case '5': document.querySelector('.attendance-btn.absent').click(); break;
-                        case '6': document.querySelector('.attendance-btn.unchecked').click(); break;
-                        case 'Escape': selectedStudents = []; document.querySelectorAll('.student-list tr.selected').forEach(row => row.classList.remove('selected')); break;
-                    }
+                if (document.getElementById('attendance').classList.contains('active') && !input) {
+                    const map = { '1': '.present', '2': '.leave', '3': '.official', '4': '.personal', '5': '.absent', '6': '.unchecked' };
+                    if (map[e.key]) document.querySelector(map[e.key]).click();
+                    if (e.key === 'Escape') { selectedStudents = []; document.querySelectorAll('.student-list tr.selected').forEach(r => r.classList.remove('selected')); }
                 }
             });
         }
 
         // ==================== 自動儲存 ====================
-        function startAutoSave() { if (autoSaveTimer) clearInterval(autoSaveTimer); autoSaveTimer = setInterval(() => { if (saveDataToStorage()) console.log('自動儲存完成:', new Date().toLocaleTimeString()); }, systemConfig.autoSaveInterval); }
+        function startAutoSave() { if (autoSaveTimer) clearInterval(autoSaveTimer); autoSaveTimer = setInterval(() => saveDataToStorage(), systemConfig.autoSaveInterval); }
         function stopAutoSave() { if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; } }
 
         // ==================== 離線檢測 ====================
         function initOfflineDetection() { updateOnlineStatus(); window.addEventListener('online', updateOnlineStatus); window.addEventListener('offline', updateOnlineStatus); }
         function updateOnlineStatus() {
-            const isOnline = navigator.onLine;
-            const statusElement = document.getElementById('networkStatus');
-            if (statusElement) { statusElement.textContent = isOnline ? '🟢 在線' : '🔴 離線'; statusElement.style.color = isOnline ? '#2e7d32' : '#c62828'; }
-            if (isOnline) showNotification('網路已恢復', 'success', 2000); else showNotification('目前處於離線模式', 'warning', 3000);
+            const on = navigator.onLine;
+            const el = document.getElementById('networkStatus');
+            if (el) { el.textContent = on ? '🟢 在線' : '🔴 離線'; el.style.color = on ? '#2e7d32' : '#c62828'; }
+            showNotification(on ? '網路已恢復' : '目前處於離線模式', on ? 'success' : 'warning', 2000);
         }
 
         // ==================== 記憶體監控 ====================
         function initMemoryMonitor() {
             setInterval(() => {
                 try {
-                    let totalSize = 0;
-                    for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); const value = localStorage.getItem(key); totalSize += (key.length + value.length) * 2; }
-                    const maxSize = 5 * 1024 * 1024;
-                    const usagePercent = (totalSize / maxSize) * 100;
-                    if (usagePercent > 80) { console.warn(`localStorage使用率過高: ${usagePercent.toFixed(1)}%`); cleanupOldBackups(); if (usagePercent > 90) showNotification('儲存空間即將不足，請匯出備份並清理資料', 'warning'); }
-                } catch (error) { console.error('記憶體監控錯誤:', error); }
+                    let total = 0;
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const k = localStorage.key(i);
+                        total += (k.length + localStorage.getItem(k).length) * 2;
+                    }
+                    const usage = (total / (5 * 1024 * 1024)) * 100;
+                    if (usage > 80) { console.warn(`localStorage使用率 ${usage.toFixed(1)}%`); cleanupOldBackups(); if (usage > 90) showNotification('儲存空間即將不足，請備份並清理', 'warning'); }
+                } catch (e) {}
             }, 60000);
         }
 
         // ==================== 系統健康檢查 ====================
         function systemHealthCheck() {
-            return new Promise((resolve) => {
-                const checks = { localStorage: false, courses: false, dom: false, functions: false, dataStructure: false };
-                try { localStorage.setItem('health_check', 'test'); localStorage.removeItem('health_check'); checks.localStorage = true; } catch (e) { console.error('localStorage檢查失敗:', e); }
-                checks.courses = Object.keys(courses).length > 0;
-                checks.dom = !!document.getElementById('studentTable');
-                checks.functions = typeof saveDataToStorage === 'function' && typeof renderStudentTableOptimized === 'function';
-                try { checks.dataStructure = validateAttendanceData(attendanceData); } catch (e) { console.error('資料結構檢查失敗:', e); }
-                const allPassed = Object.values(checks).every(check => check);
-                if (!allPassed) {
-                    console.warn('系統健康檢查失敗:', checks);
-                    let errorMessage = '系統檢測到以下異常：';
-                    if (!checks.localStorage) errorMessage += ' localStorage無法使用';
-                    if (!checks.courses) errorMessage += ' 課程資料異常';
-                    if (!checks.dom) errorMessage += ' 頁面元素異常';
-                    if (!checks.functions) errorMessage += ' 系統函數異常';
-                    if (!checks.dataStructure) errorMessage += ' 資料結構異常';
-                    showNotification(errorMessage + '，建議重新整理頁面', 'warning');
-                }
-                resolve(checks);
-            });
+            const checks = {
+                ls: (() => { try { localStorage.setItem('_test', '1'); localStorage.removeItem('_test'); return true; } catch { return false; } })(),
+                courses: Object.keys(courses).length > 0,
+                dom: !!document.getElementById('studentTable'),
+                func: typeof saveDataToStorage === 'function',
+                data: validateAttendanceData(attendanceData)
+            };
+            if (!Object.values(checks).every(Boolean)) {
+                console.warn('健康檢查失敗', checks);
+                showNotification('系統異常，建議重新整理', 'warning');
+            }
         }
 
         // ==================== 工具函數 ====================
-        function showLoading(message = '處理中...') {
+        function showLoading(msg = '處理中...') {
             hideLoading();
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loadingOverlay';
-            loadingDiv.innerHTML = `<div class="loading-content"><div class="spinner"></div><p>${message}</p></div>`;
-            document.body.appendChild(loadingDiv);
+            const div = document.createElement('div');
+            div.id = 'loadingOverlay';
+            div.innerHTML = `<div class="loading-content"><div class="spinner"></div><p>${msg}</p></div>`;
+            document.body.appendChild(div);
+        }
+        function hideLoading() { document.getElementById('loadingOverlay')?.remove(); }
+
+        function showNotification(msg, type = 'info', dur = 3000) {
+            const n = document.createElement('div');
+            n.textContent = msg;
+            n.style.cssText = `position:fixed;top:20px;right:20px;padding:15px 20px;border-radius:6px;color:white;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:slideIn 0.3s ease;max-width:400px;`;
+            n.style.backgroundColor = type === 'success' ? '#2e7d32' : type === 'error' ? '#c62828' : type === 'warning' ? '#ff9800' : '#2a5298';
+            document.body.appendChild(n);
+            setTimeout(() => { n.style.animation = 'slideOut 0.3s ease'; setTimeout(() => n.remove(), 300); }, dur);
         }
 
-        function hideLoading() { const loadingDiv = document.getElementById('loadingOverlay'); if (loadingDiv) loadingDiv.remove(); }
-
-        function showNotification(message, type, duration = 3000) {
-            if (!systemConfig.enableNotifications && type !== 'error') return;
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            notification.style.cssText = `position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 6px; color: white; font-weight: 600; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease; max-width: 400px; word-wrap: break-word;`;
-            if (type === 'success') notification.style.backgroundColor = '#2e7d32';
-            else if (type === 'error') notification.style.backgroundColor = '#c62828';
-            else if (type === 'warning') notification.style.backgroundColor = '#ff9800';
-            else notification.style.backgroundColor = '#2a5298';
-            document.body.appendChild(notification);
-            setTimeout(() => { notification.style.animation = 'slideOut 0.3s ease'; setTimeout(() => { if (notification.parentNode) notification.parentNode.removeChild(notification); }, 300); }, duration);
-        }
-
-        function showCheckinStatus(message, type) {
-            const statusDiv = document.getElementById('checkinStatus');
-            statusDiv.textContent = message;
-            statusDiv.className = 'checkin-status';
-            if (type === 'success') statusDiv.classList.add('checkin-success');
-            else if (type === 'error') statusDiv.classList.add('checkin-error');
-            statusDiv.style.display = 'block';
-            setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+        function showCheckinStatus(msg, type) {
+            const d = document.getElementById('checkinStatus');
+            d.textContent = msg;
+            d.className = 'checkin-status';
+            d.classList.add(type === 'success' ? 'checkin-success' : 'checkin-error');
+            d.style.display = 'block';
+            setTimeout(() => d.style.display = 'none', 3000);
         }
 
         // ==================== 頁面生命週期管理 ====================
         window.addEventListener('beforeunload', function(e) {
-            stopAutoSave();
-            stopAutoSync();
-            saveDataToStorage();
-            saveCoursesToStorage();
-            if (isTeacherMode && selectedStudents.length > 0) { e.preventDefault(); e.returnValue = '您有未儲存的點名變更，確定要離開嗎？'; return e.returnValue; }
+            stopAutoSave(); stopAutoSync(); saveDataToStorage(); saveCoursesToStorage();
+            if (isTeacherMode && selectedStudents.length) { e.preventDefault(); e.returnValue = '有未儲存變更，確定離開？'; return e.returnValue; }
         });
 
-        // ==================== 錯誤處理 ====================
-        window.addEventListener('error', function(event) {
-            console.error('全局錯誤:', event.error);
+        // ==================== 全域錯誤處理 ====================
+        window.addEventListener('error', function(e) {
+            console.error('全域錯誤:', e.error);
             showNotification('系統發生錯誤，部分功能可能受影響', 'error');
-            try { loadDataFromStorage(); renderStudentTableOptimized(); } catch (recoveryError) { console.error('自動恢復失敗:', recoveryError); }
-            return false;
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('未處理的 Promise 拒絕:', e.reason);
         });
 
-        setInterval(() => { systemHealthCheck(); }, 5 * 60 * 1000);
+        // 定期健康檢查
+        setInterval(systemHealthCheck, 5 * 60 * 1000);
     </script>
 </body>
 </html>
