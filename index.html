@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>東部旅遊規劃系統 v15.2｜姜福榮 老師</title>
+<title>東部旅遊規劃系統 v16.0｜姜福榮 老師</title>
 <style id="mainStyle">
 :root{--nv:#1a4d7a;--nd:#12365a;--nl:#2d6ba5;--gd:#c8a45c;--bg:#f4f6f9;--ln:#dde3ea;--tx:#22303c;--mt:#6b7a8c;--ok:#2e7d5b;--wn:#c0392b}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -26,7 +26,7 @@ header .wrap{position:relative}
 main{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
 .card{background:#fff;border-radius:10px;padding:22px 24px;margin-bottom:20px;box-shadow:0 1px 6px rgba(26,77,122,.08);border:1px solid var(--ln)}
 .card h2{font-size:17px;color:var(--nv);border-left:5px solid var(--gd);padding-left:11px;margin-bottom:16px}
-.hidden,.guide-card.collapsed .guide-b{display:none}
+.hidden,.guide-card.collapsed .guide-b,.pkg-card.collapsed .pkg-b{display:none}
 .guide-card{background:linear-gradient(135deg,#f0f7ff,#fdf9f0);border:1px solid #d0e0f0;border-left:5px solid var(--gd);border-radius:8px;margin-bottom:20px;overflow:hidden}
 .guide-h{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;font-weight:600;color:var(--nv);font-size:15px}
 .guide-h .arw{transition:.25s;font-size:12px;color:var(--mt)}
@@ -37,6 +37,21 @@ main{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
 .guide-item b{color:var(--nv);font-size:14px;display:block;margin-bottom:5px}
 .guide-item p{color:#455;font-size:13px}
 .guide-item .warn-badge{display:inline-block;background:#fdeeee;color:#8a2820;font-size:11.5px;padding:1px 7px;border-radius:8px;font-weight:600;margin-left:4px;border:1px solid #e0a0a0}
+.pkg-card{background:linear-gradient(135deg,#fff9ec,#f0f7ff);border:1px solid #e8d5a8;border-left:5px solid var(--gd);border-radius:8px;margin-bottom:20px;overflow:hidden}
+.pkg-h{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;cursor:pointer;font-weight:600;color:var(--nv);font-size:15px}
+.pkg-h:hover{background:rgba(255,255,255,.5)}
+.pkg-h .arw{transition:.25s;font-size:12px;color:var(--mt)}
+.pkg-card.collapsed .pkg-h .arw{transform:rotate(-90deg)}
+.pkg-b{padding:0 20px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.pkg-item{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;transition:.15s}
+.pkg-item:hover{border-color:var(--nv);box-shadow:0 4px 12px rgba(26,77,122,.12);transform:translateY(-2px)}
+.pkg-item .nm{font-weight:700;color:var(--nv);font-size:14.5px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.pkg-item .badge{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--gd);color:#3a2c10;font-weight:600;flex-shrink:0}
+.pkg-item .meta{font-size:12.5px;color:var(--mt);line-height:1.8}
+.pkg-item .spots{font-size:12px;color:#2c4a63;margin-top:6px;line-height:1.6;flex:1}
+.pkg-item .note{font-size:11.5px;color:#8a6a1e;margin-top:6px;padding-top:6px;border-top:1px dashed #e8d5a8}
+.pkg-item .btn-apply{margin-top:10px;width:100%;background:var(--gd);color:#3a2c10;border:none;border-radius:6px;padding:9px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;transition:.15s}
+.pkg-item .btn-apply:hover{background:#d8b46c}
 @media(max-width:760px){.guide-b{grid-template-columns:1fr}}
 .basic-row{display:grid;grid-template-columns:1fr 1fr .8fr auto;gap:14px;align-items:end;margin-bottom:14px}
 @media(max-width:700px){.basic-row{grid-template-columns:1fr 1fr}}
@@ -187,7 +202,7 @@ tr:nth-child(even) td{background:#fafcfe}
 .support-bar.hidden{display:none}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
 .modal.hidden{display:none}
-.modal-box{background:#fff;border-radius:12px;padding:28px 32px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.modal-box{background:#fff;border-radius:12px;padding:28px 32px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2)}
 .modal-box h3{color:var(--nv);margin-bottom:12px;font-size:18px}
 .modal-box ul{padding-left:22px;margin:10px 0;font-size:13.5px;color:#455}
 .modal-box .pay-list{background:#f7fafd;border-radius:8px;padding:12px 16px;font-size:13.5px;line-height:2;margin:12px 0}
@@ -195,6 +210,8 @@ tr:nth-child(even) td{background:#fafcfe}
 .modal-box .tiny a{color:var(--nl)}
 .modal-box .acts{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap}
 .modal-box .cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.modal-box .cfg-sub{font-size:12.5px;color:var(--nv);font-weight:600;margin:14px 0 4px;padding-top:10px;border-top:1px dashed var(--ln)}
+.modal-box .cfg-sub:first-of-type{margin-top:6px;padding-top:0;border-top:none}
 .trip-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;background:#fafcfe;border:1px solid var(--ln);border-radius:6px;margin-bottom:8px}
 .trip-row .info{display:flex;flex-direction:column;gap:2px;font-size:13.5px}
 .trip-row .info b{color:var(--nv)}
@@ -202,7 +219,7 @@ tr:nth-child(even) td{background:#fafcfe}
 .trip-row .acts{display:flex;gap:6px}
 @media(max-width:640px){table{display:block;overflow-x:auto;white-space:nowrap}.day-title{flex-direction:column;align-items:flex-start}.toolbar .btn{flex:1;text-align:center}.tabs{overflow-x:auto;flex-wrap:nowrap}.tab{white-space:nowrap;padding:10px 16px;font-size:13.5px}}
 @media(max-width:480px){.modal-box .cfg-grid{grid-template-columns:1fr}.modal-box{padding:22px 20px}}
-@media print{header,#s1,#s2,.steps,.support-bar,.guide-card,.no-print{display:none!important}body{background:#fff;font-size:12px}main{padding:0;max-width:100%}.card{box-shadow:none;border:none;padding:0;margin:0}.tabpane{display:block!important;page-break-before:always}.tabpane:first-child{page-break-before:auto}.tabs{display:none}.day-title,th,.price-box{background:var(--nv)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.day-title.cross{background:#7a3a1e!important}.transit-row td{background:#f4f7fa!important}body.pc .internal{display:none!important}}
+@media print{header,#s1,#s2,.steps,.support-bar,.guide-card,.pkg-card,.no-print{display:none!important}body{background:#fff;font-size:12px}main{padding:0;max-width:100%}.card{box-shadow:none;border:none;padding:0;margin:0}.tabpane{display:block!important;page-break-before:always}.tabpane:first-child{page-break-before:auto}.tabs{display:none}.day-title,th,.price-box{background:var(--nv)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.day-title.cross{background:#7a3a1e!important}.transit-row td{background:#f4f7fa!important}body.pc .internal{display:none!important}}
 </style>
 </head>
 <body>
@@ -211,7 +228,7 @@ tr:nth-child(even) td{background:#fafcfe}
   <div class="wrap">
     <h1>東部旅遊・<span>自動行程規劃系統</span></h1>
     <p>花蓮・台東 ｜ 旅行同業免費使用 ｜ 行程規劃・成本估算・報價單一鍵產出</p>
-    <div class="ver">v15.2</div>
+    <div class="ver">v16.0</div>
   </div>
 </header>
 <div class="author-bar"><div class="wrap">
@@ -237,6 +254,11 @@ tr:nth-child(even) td{background:#fafcfe}
       <div class="guide-item"><div class="ic">🔄</div><div><b>換裝置或換瀏覽器，資料不會跟著走</b><p>桌機規劃好，換手機打開同網址，資料是空的。跨裝置請匯出檔案後重建。</p></div></div>
       <div class="guide-item"><div class="ic">🛡️</div><div><b>資料安全建議</b><p>公用電腦用完請按頁面底部「清除本機資料」；重要客戶資料請匯出保存。</p></div></div>
     </div>
+  </div>
+
+  <div class="pkg-card" id="pkgCard">
+    <div class="pkg-h" onclick="togglePkg()"><span>🎒 花東經典套裝行程（點擊一鍵套用）</span><span class="arw">▼</span></div>
+    <div class="pkg-b" id="pkgList"></div>
   </div>
 
   <h2>步驟一・客戶需求輸入</h2>
@@ -319,7 +341,7 @@ tr:nth-child(even) td{background:#fafcfe}
   </div></div>
 
   <div class="acc open" data-acc><div class="acc-h">四、景點偏好與必去清單 <span class="arw">▶</span></div><div class="acc-b">
-    <div class="hint" style="margin-bottom:12px">依縣市與分區顯示，勾選「必去」景點優先排入。<b>夜市類景點自動安排於晚間，不佔白天行程、不計遊覽車工時。</b></div>
+    <div class="hint" style="margin-bottom:12px">依縣市與分區顯示，勾選「必去」景點優先排入。<b>夜市類自動安排於晚間、🍜 標記為輕食景點。</b></div>
     <div class="spot-head"><span style="font-size:13px;color:var(--mt)">勾選狀態自動保存</span><div class="tools"><button class="btn sm ghost" id="btnSelAll">全選</button><button class="btn sm ghost" id="btnSelNone">清除</button></div></div>
     <div id="spotPicker"></div>
     <div class="custom-box">
@@ -438,20 +460,39 @@ tr:nth-child(even) td{background:#fafcfe}
 <div class="modal hidden" id="configModal"><div class="modal-box">
   <h3>⚙️ 成本參數設定</h3>
   <p style="font-size:13px;color:var(--mt);margin-bottom:6px">依貴公司實際成本調整，儲存於本機瀏覽器。可設 0。</p>
+
+  <div class="cfg-sub">🚌 遊覽車價格（元／日）</div>
   <div class="cfg-grid">
-    <div><label class="fl">跨縣市加價（元/日）</label><input type="number" id="cfgCross" step="100" min="0"></div>
-    <div><label class="fl">領隊出差費（元/日）</label><input type="number" id="cfgLeader" step="100" min="0"></div>
+    <div><label class="fl">九人座廂型車</label><input type="number" id="cfgBus1" step="100" min="0"></div>
+    <div><label class="fl">21 人座中巴</label><input type="number" id="cfgBus2" step="100" min="0"></div>
+    <div><label class="fl">33 人座中巴</label><input type="number" id="cfgBus3" step="100" min="0"></div>
+    <div><label class="fl">43 人座大型巴士</label><input type="number" id="cfgBus4" step="100" min="0"></div>
+  </div>
+
+  <div class="cfg-sub">🧑‍💼 人事與雜支</div>
+  <div class="cfg-grid">
+    <div><label class="fl">導遊、領隊出差費（元/日）</label><input type="number" id="cfgLeader" step="100" min="0"></div>
+    <div><label class="fl">司機餐宿補貼（元/晚/台）</label><input type="number" id="cfgDriver" step="100" min="0"></div>
     <div><label class="fl">保險費（元/人）</label><input type="number" id="cfgIns" step="10" min="0"></div>
     <div><label class="fl">行政雜支（%）</label><input type="number" id="cfgMisc" step="0.5" min="0"></div>
-    <div><label class="fl">民宿（元/人晚）</label><input type="number" id="cfgH1" step="50" min="0"></div>
+  </div>
+
+  <div class="cfg-sub">🏨 住宿（元／人晚）</div>
+  <div class="cfg-grid">
+    <div><label class="fl">民宿</label><input type="number" id="cfgH1" step="50" min="0"></div>
     <div><label class="fl">三星飯店</label><input type="number" id="cfgH2" step="50" min="0"></div>
     <div><label class="fl">四星飯店</label><input type="number" id="cfgH3" step="50" min="0"></div>
     <div><label class="fl">五星飯店</label><input type="number" id="cfgH4" step="50" min="0"></div>
-    <div><label class="fl">經濟合菜（元/桌）</label><input type="number" id="cfgM1" step="100" min="0"></div>
-    <div><label class="fl">標準合菜（元/桌）</label><input type="number" id="cfgM2" step="100" min="0"></div>
-    <div><label class="fl">精緻合菜（元/桌）</label><input type="number" id="cfgM3" step="100" min="0"></div>
-    <div><label class="fl">原住民風味餐（元/桌）</label><input type="number" id="cfgM4" step="100" min="0"></div>
   </div>
+
+  <div class="cfg-sub">🍽 團餐（元／桌）</div>
+  <div class="cfg-grid">
+    <div><label class="fl">經濟合菜</label><input type="number" id="cfgM1" step="100" min="0"></div>
+    <div><label class="fl">標準合菜</label><input type="number" id="cfgM2" step="100" min="0"></div>
+    <div><label class="fl">精緻合菜</label><input type="number" id="cfgM3" step="100" min="0"></div>
+    <div><label class="fl">原住民風味餐</label><input type="number" id="cfgM4" step="100" min="0"></div>
+  </div>
+
   <div class="acts">
     <button class="btn gold" id="btnCfgSave">儲存</button>
     <button class="btn ghost" id="btnCfgReset">恢復預設</button>
@@ -467,34 +508,112 @@ tr:nth-child(even) td{background:#fafcfe}
 </div></div>
 
 <script>
-/* v15.2 東部旅遊規劃系統 ｜ 姜福榮 老師 */
-
+/* v16.0 東部旅遊規劃系統 ｜ 姜福榮 老師
+   ─ v16.0 成本參數調整 ─
+   1. [移除] 跨縣市加價（元/日）參數與相關計算
+   2. [更名] 領隊出差費 → 導遊、領隊出差費
+   3. [新增] 遊覽車各車型價格可設定（九人座/21/33/43 人座）
+   4. [新增] 司機餐宿補貼（元/晚/台）可設定
+   5. [優化] 設定面板依「遊覽車／人事雜支／住宿／團餐」分區塊
+   ─ v15.9 修正與優化 ─
+   1. [修正] 夜間景點計數永遠為 0（改以 spot.night 標記判斷）
+   2. [修正] planTrip 補充景點迴圈條件錯誤（list.length < perDay.length → < need）
+   3. [修正] checkRest 於長途轉乘時使用錯誤基準時間
+   4. [修正] renderHealth 除以零（grandTotalRaw=0）產生 NaN
+   5. [修正] autoFix 移除景點後未同步 picked（UI 勾選狀態不一致）
+   6. [修正] 突發狀況「客戶臨時增加 5 人」未同步修正 child 上限
+   7. [優化] 出發日期早於今日改為靜默修正 + 提示
+   8. [優化] planTrip 對空 cityAlloc 防護
+   9. [優化] esc() 對 null/undefined 安全處理
+  10. [優化] 統計文字改以 night 標記判斷
+*/
 const safeStore=(()=>{try{const t='_t';localStorage.setItem(t,'1');localStorage.removeItem(t);return localStorage}catch(e){const m={};return{getItem:k=>k in m?m[k]:null,setItem:(k,v)=>{m[k]=String(v)},removeItem:k=>{delete m[k]}}}})();
 
 const isNight=n=>["東大門夜市","台東夜市","鐵花村音樂聚落"].includes(n)||/夜市/.test(n);
+const isFood=n=>["榕樹下米苔目","卑南豬血湯","陳記麻糬","鼎倫牛肉麵","關山臭豆腐","阿鋐炸雞","東河包子","都蘭海角咖啡"].includes(n);
 
+const noAuto=(s,cfg)=>/不適合大客車|需事先申請|需申請入園|需預約/.test(s.note||"")||(/赤柯山|六十石山/.test(s.name)&&[8,9].includes(cfg.startDate.getMonth()+1));
 const K="金針花季約 8-9 月，全線禁止甲、乙類大客車上山";
 const A={
 1:"將軍府/松園別館||50/花蓮文創園區|90/鐵道博物館/東大門夜市|120||夜間步行，建議 19:00 後前往/花蓮港觀景台/太平洋公園/四八高地|40/向日廣場",
-2:"七星潭風景區|90/新城老街/新城天主教堂|40/太魯閣遊客中心|||山區常有落石或交通管制/砂卡礑步道|120||部分步道需申請入園/燕子口步道/清水斷崖|40/崇德海灘|40/和仁礫灘|50",
+2:"七星潭風景區|90/新城老街/新城天主教堂|40/太魯閣遊客中心|||目前太魯閣園區僅遊客中心可參觀（燕子口等步道管制中），請以太管處公告為準/清水斷崖|40/崇德海灘|40/和仁礫灘|50",
 3:"理想星巴克/雲山水夢幻湖|90|100/遠雄海洋公園|300|890|團體票需提前預約/大鼻石步道/麻糬洞|30/親不知子天空步道|40|50|步道狹窄，團體需分批/石梯坪/北回歸線標誌|30/新社梯田|40/石門班哨角|30",
 4:`慶修院||30/鯉魚潭風景區|90/立川漁場|90/林田山林場|90|50/光復糖廠/大農大富平地森林|90/瑞穗牧場|90/赤柯山|120||${K}/六十石山|120||${K}/富里農會/鳳林校長夢工廠|50/舞鶴茶園`,
-5:"鐵花村音樂聚落|90||夜間音樂聚落，週三休/台東糖廠文化園區|90/台東森林公園|90/台東美術館/鐵道藝術村/卑南文化公園|90/知本溫泉|120||颱風後山區可能封閉/台東夜市|90||夜間步行，週一休",
-6:"華源海灣|40/太麻里平交道|40/太麻里車站|40/太麻里金針山|120||金針花季約 8-9 月/金崙大橋|30/多良車站|||熱門拍照點，假日人潮多/千禧曙光紀念園區/大武海濱公園|40/阿朗壹古道|240||需事先申請入山證，不適合大客車，請改用 9 人座接駁",
-7:"大坡池/池上伯朗大道|90/池上飯包文化故事館/鹿野高台|90||熱氣球嘉年華約 6-8 月，交通管制/武陵綠色隧道/初鹿牧場|90/台東原生應用植物園|120/關山親水公園/山里車站|40/電光社區",
-8:"加路蘭海岸|40/小野柳|90/富山護漁區|90/金剛大道/石雨傘/三仙台|90/八仙洞/烏石鼻/比西里岸"
+5:"鐵花村音樂聚落|90||夜間音樂聚落，週三休/台東糖廠文化園區|90/台東森林公園（黑森林）|90/台東美術館/鐵道藝術村/卑南文化公園|90/卑南遺址公園/鯉魚山步道|60/知本溫泉|120||颱風後山區可能封閉/知本國家森林遊樂區|120|50/台東觀光夜市|90||夜間步行，週一休/榕樹下米苔目|25||50 元銅板價，週四公休/卑南豬血湯|25||在地小吃/陳記麻糬|25||90 年麻糬老店",
+6:"華源海灣天空之鏡|30||2025 超紅打卡點/太麻里平交道|40/太麻里車站|40/太麻里金針山|120||金針花季約 8-9 月/金崙大橋|30/多良車站|||熱門拍照點，假日人潮多/千禧曙光紀念園區/大武海濱公園|40/阿朗壹古道|240||需事先申請入山證，不適合大客車，請改用 9 人座接駁/海賊灣沙灘|60||秘境海灣，需步行進入/鱷魚山觀景平台|40||眺望太平洋/鼎倫牛肉麵|30||金崙火車站附近，週二三公休",
+7:"大坡池/池上伯朗大道|90/池上飯包文化故事館/鹿野高台|90||熱氣球嘉年華約 6-8 月，交通管制/武陵綠色隧道/初鹿牧場|90/台東原生應用植物園|120/關山親水公園/關山臭豆腐|25||市場內隱藏版/山里車站|40/電光社區/鸞山森林文化博物館|180||需預約，原始森林體驗/達谷梵秘境|60||水利遺跡天空之鏡/阿鋐炸雞|25||在地人推薦",
+8:"加路蘭海岸|40/小野柳|90/富山護漁區|90/金剛大道/石雨傘/三仙台|90/八仙洞/烏石鼻/比西里岸/東河包子|25||台 11 線必買/都蘭海角咖啡|60||海景第一排"
 };
 const CA={"花蓮縣":[1,2,3,4],"台東縣":[5,6,7,8]};
 const P=(a,s)=>s.split('/').map(x=>{const[n,m,t,o]=x.split('|');return[n,a,+m||60,+t||0,o||""]});
 const DB=Object.fromEntries(Object.entries(CA).map(([c,as])=>[c,as.flatMap(a=>P(a,A[a]))]));
 
+const PKG=[
+ {name:'太魯閣經典二日',days:2,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'三星',meal:'標準',
+  cities:['花蓮縣'],
+  spots:['松園別館','七星潭風景區','清水斷崖','太魯閣遊客中心','東大門夜市','慶修院','雲山水夢幻湖'],
+  note:'山線經典｜松園+七星潭+太魯閣+夜市'},
+ {name:'奢華五星三日',days:3,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'五星',meal:'精緻',
+  cities:['花蓮縣'],
+  spots:['松園別館','新城老街','太魯閣遊客中心','鯉魚潭風景區','七星潭風景區','東大門夜市','慶修院','林田山林場'],
+  note:'五星住宿｜太魯閣遊客中心+鯉魚潭+縱谷慢遊'},
+ {name:'花東山海戀三日',days:3,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'四星',meal:'標準',
+  cities:['花蓮縣','台東縣'],
+  spots:['石梯坪','北回歸線標誌','瑞穗牧場','大農大富平地森林','光復糖廠','慶修院','東大門夜市','三仙台','八仙洞'],
+  note:'跨縣市｜海線景觀+縱谷風光'},
+ {name:'質感文青三日',days:3,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'民宿',meal:'標準',
+  cities:['花蓮縣'],
+  spots:['林田山林場','光復糖廠','瑞穗牧場','慶修院','東大門夜市','雲山水夢幻湖'],
+  note:'部落走讀+工藝體驗'},
+ {name:'無障礙原味山海二日',days:2,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'四星',meal:'標準',
+  cities:['花蓮縣'],
+  spots:['太魯閣遊客中心','七星潭風景區','松園別館','慶修院','鯉魚潭風景區'],
+  note:'無障礙路線｜各族群適用'},
+ {name:'鯉魚潭一日輕旅行',days:1,from:'花蓮縣',traffic:'自行前往',hotel:'民宿',meal:'經濟',
+  cities:['花蓮縣'],
+  spots:['鯉魚潭風景區','立川漁場'],
+  note:'單車慢遊｜水岸+生態體驗'},
+ {name:'台東縱谷三日',days:3,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'三星',meal:'標準',
+  cities:['台東縣'],
+  spots:['池上伯朗大道','大坡池','鹿野高台','初鹿牧場','關山親水公園','關山臭豆腐','知本溫泉','台東森林公園（黑森林）','鐵花村音樂聚落','台東觀光夜市'],
+  note:'山線經典｜伯朗大道+鹿野+知本溫泉'},
+ {name:'台東海岸二日',days:2,from:'台北市',traffic:'台鐵＋遊覽車',hotel:'四星',meal:'標準',
+  cities:['台東縣'],
+  spots:['加路蘭海岸','小野柳','富山護漁區','金剛大道','三仙台','八仙洞','東河包子','台東森林公園（黑森林）','鐵花村音樂聚落'],
+  note:'海線經典｜三仙台+八仙洞+東海岸'},
+ {name:'台東市區+知本溫泉二日',days:2,from:'高雄市',traffic:'台鐵＋遊覽車',hotel:'四星',meal:'標準',
+  cities:['台東縣'],
+  spots:['台東森林公園（黑森林）','鐵花村音樂聚落','卑南遺址公園','台東糖廠文化園區','知本溫泉','知本國家森林遊樂區','台東觀光夜市','榕樹下米苔目'],
+  note:'近郊慢遊｜市區+溫泉+夜市'},
+ {name:'台東南端秘境二日',days:2,from:'高雄市',traffic:'台鐵＋遊覽車',hotel:'三星',meal:'標準',
+  cities:['台東縣'],
+  spots:['多良車站','太麻里平交道','太麻里金針山','金崙大橋','華源海灣天空之鏡','海賊灣沙灘','鼎倫牛肉麵','知本溫泉'],
+  note:'南端秘境｜多良+金針山+海賊灣'}
+];
+
 const ZONE={};
-["15,25,30,30,180,240,180,180","15,60,60,180,240,180,180","15,25,120,120,120,100","15,120,120,120,100","15,40,35,50","15,80,90","15,30","15"]
+["15,25,30,30,180,240,180,180","15,100,90,180,240,180,180","15,25,120,120,120,100","15,120,120,120,100","15,40,35,50","15,80,90","15,30","15"]
 .forEach((r,i)=>r.split(',').forEach((v,j)=>ZONE[(i+1)+'-'+(i+1+j)]=+v));
 
-const CD={crossCitySurcharge:2500,leaderFee:1000,insurance:150,miscRate:0.05,hotelRates:{"民宿":800,"三星":1200,"四星":1800,"五星":2800},mealRates:{"經濟":2500,"標準":3500,"精緻":5000,"風味":6000}};
+/* v16.0 成本預設值：移除 crossCitySurcharge，新增 driverMealRate、busRates */
+const CD={
+  leaderFee:1000,
+  insurance:150,
+  miscRate:0.05,
+  driverMealRate:1000,
+  hotelRates:{"民宿":800,"三星":1200,"四星":1800,"五星":2800},
+  mealRates:{"經濟":2500,"標準":3500,"精緻":5000,"風味":6000},
+  busRates:{"九人座廂型車":5500,"21 人座中巴":8500,"33 人座中巴":10500,"43 人座大型巴士":12500}
+};
 let CONFIG=JSON.parse(JSON.stringify(CD));
 try{const c=JSON.parse(safeStore.getItem('cfg_v14')||'null');if(c)Object.assign(CONFIG,c)}catch(e){}
+/* 相容舊存檔：補齊缺失欄位 */
+(function(){
+  if(!CONFIG.busRates)CONFIG.busRates=Object.assign({},CD.busRates);
+  else Object.keys(CD.busRates).forEach(k=>{if(CONFIG.busRates[k]==null)CONFIG.busRates[k]=CD.busRates[k]});
+  if(CONFIG.driverMealRate==null)CONFIG.driverMealRate=CD.driverMealRate;
+  delete CONFIG.crossCitySurcharge;
+})();
 
 const HOTEL_ORDER=["五星","四星","三星","民宿"], MEAL_ORDER=["風味","精緻","標準","經濟"];
 const AREA_NM={1:"花蓮・近郊",2:"花蓮・北端（新城／太魯閣）",3:"花蓮・南端海線",4:"花蓮・南端山線",5:"台東・近郊",6:"台東・南端",7:"台東・北端山線",8:"台東・北端海線"};
@@ -505,10 +624,18 @@ const DM={"A-A":30,"A-B":90,"A-C":150,"A-D":210,"A-E":270,"A-F":90,"A-G":180,"A-
 const zoneT=(a,b)=>a===b?(ZONE[a+'-'+a]||15):(ZONE[a<b?a+'-'+b:b+'-'+a]||30);
 const zoneS=a=>(AREA_NM[a]||"").replace(/（.*/,'');
 const drive=(from,to)=>{if(from===to)return 0;const rf=REG[from]||"C",rt=REG[to]||"C";const k=rf<rt?rf+'-'+rt:rt+'-'+rf;return DM[k]||180};
-const busInfo=p=>p<=8?{rate:5500,type:"九人座廂型車",n:1}:p<=20?{rate:8500,type:"21 人座中巴",n:1}:p<=32?{rate:10500,type:"33 人座中巴",n:1}:p<=42?{rate:12500,type:"43 人座大型巴士",n:1}:{rate:10500,type:"33 人座中巴 × 2 台",n:2};
+/* v16.0 busInfo 改讀 CONFIG.busRates */
+const busInfo=p=>{
+  const BR=CONFIG.busRates||CD.busRates;
+  if(p<=8) return {rate:BR["九人座廂型車"],type:"九人座廂型車",n:1};
+  if(p<=20) return {rate:BR["21 人座中巴"],type:"21 人座中巴",n:1};
+  if(p<=32) return {rate:BR["33 人座中巴"],type:"33 人座中巴",n:1};
+  if(p<=42) return {rate:BR["43 人座大型巴士"],type:"43 人座大型巴士",n:1};
+  return {rate:BR["33 人座中巴"],type:"33 人座中巴 × 2 台",n:2};
+};
 const stName=(c,air)=>air?(c==="花蓮縣"?"花蓮航空站":c==="台東縣"?"臺東航空站":c.replace(/[市縣]$/,'')+"航空站"):(c==="花蓮縣"?"花蓮車站":c==="台東縣"?"臺東車站":c.replace(/[市縣]$/,'')+"車站");
 
-const LS={C:'c_v14',S:'s_v14',T:'t_v14',U:'u_v14',G:'g_v14',P:'p_v14'};
+const LS={C:'c_v14',S:'s_v14',T:'t_v14',U:'u_v14',G:'g_v14',P:'p_v14',PK:'pk_v154'};
 let custom=[];try{custom=JSON.parse(safeStore.getItem(LS.C)||'[]')}catch(e){}
 let picked=new Set();try{picked=new Set(JSON.parse(safeStore.getItem(LS.S)||'[]'))}catch(e){}
 const saveC=()=>{try{safeStore.setItem(LS.C,JSON.stringify(custom))}catch(e){}};
@@ -523,7 +650,7 @@ const getAllSpots=city=>{
 const $=id=>document.getElementById(id);
 const hm=m=>{const x=Math.max(0,Math.round(m));return String(Math.floor(x/60)).padStart(2,'0')+":"+String(x%60).padStart(2,'0')};
 const money=n=>"NT$ "+Math.round(n).toLocaleString('zh-TW');
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const WK=["日","一","二","三","四","五","六"];
 const numV=(id,d)=>{const v=parseFloat($(id).value);return isNaN(v)?d:v};
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -532,7 +659,8 @@ const rocD=d=>"民國"+(d.getFullYear()-1911)+"年"+(d.getMonth()+1)+"月"+d.get
 const openM=id=>$(id).classList.remove('hidden');
 const closeM=id=>$(id).classList.add('hidden');
 const togG=()=>{const c=$('guideCard');c.classList.toggle('collapsed');try{safeStore.setItem(LS.G,c.classList.contains('collapsed')?'1':'0')}catch(e){}};
-const closeModal=closeM, toggleGuide=togG;
+const togPkg=()=>{const c=$('pkgCard');c.classList.toggle('collapsed');try{safeStore.setItem(LS.PK,c.classList.contains('collapsed')?'1':'0')}catch(e){}};
+const closeModal=closeM, toggleGuide=togG, togglePkg=togPkg;
 const setStep=n=>document.querySelectorAll('.step').forEach(s=>{const v=+s.dataset.step;s.classList.toggle('on',v===n);s.classList.toggle('done',v<n)});
 const allocD=(t,n)=>{const b=Math.floor(t/n),e=t%n;return Array.from({length:n},(_,i)=>b+(i<e?1:0))};
 
@@ -544,7 +672,83 @@ function syncForm(cfg){
   setOpt('subsidy',v=>(cfg.subsidy||[]).includes(v));
 }
 
+function renderPkg(){
+  const box=$('pkgList');
+  box.innerHTML=PKG.map((p,i)=>`
+    <div class="pkg-item">
+      <div class="nm"><span>🎒 ${esc(p.name)}</span><span class="badge">${p.days} 日</span></div>
+      <div class="meta">
+        <div>📍 出發：${esc(p.from)}　｜　${esc(p.traffic)}</div>
+        <div>🏨 ${esc(p.hotel)}　｜　🍽 ${esc(p.meal)}　｜　${p.cities.map(esc).join('、')}</div>
+      </div>
+      <div class="spots">🎯 ${p.spots.slice(0,5).map(esc).join('、')}${p.spots.length>5?` …等 ${p.spots.length} 個`:''}</div>
+      <div class="note">💡 ${esc(p.note)}</div>
+      <button class="btn-apply" onclick="applyPkg(${i})">✨ 一鍵套用此套裝</button>
+    </div>
+  `).join('');
+}
+
+function applyPkg(idx){
+  const p=PKG[idx]; if(!p) return;
+  const invalid=p.cities.filter(c=>!ALL_CITIES.includes(c));
+  if(invalid.length){ alert('此套裝包含無效城市：'+invalid.join('、')); return; }
+  document.querySelectorAll('#cityOptions input').forEach(cb=>{
+    cb.checked=p.cities.includes(cb.value);
+    cb.closest('.city-opt').classList.toggle('on',cb.checked);
+  });
+  $('inDays').value=p.days;
+  $('inFrom').value=p.from;$('inChild').value=0;$('inBudget').value='';
+  setRadio('traffic',p.traffic);
+  setRadio('hotel',p.hotel);
+  setRadio('meal',p.meal);
+  setRadio('hotelArea','市區');
+  setRadio('breakfast','飯店內');
+  setRadio('gtype','企業員工');
+  document.querySelectorAll('input[name=special]').forEach(cb=>{cb.checked=false;cb.closest('.opt').classList.remove('on')});
+  picked.clear();
+  p.cities.forEach(city=>{
+    const list=getAllSpots(city);
+    p.spots.forEach(name=>{
+      if(list.some(s=>s.name===name)) picked.add(sKey(city,name));
+    });
+  });
+  saveP();
+  updAlloc();
+  startPlan();
+  setTimeout(()=>{
+    const el=$('previewHint');
+    if(el) el.innerHTML=`<div class="alert good" style="margin-top:0"><b>✨ 已套用套裝：${esc(p.name)}</b><br>${p.days} 天 ${p.cities.map(esc).join('、')}　｜　${esc(p.traffic)}　｜　${esc(p.hotel)}住宿・${esc(p.meal)}餐標<br>共勾選 ${picked.size} 個景點。可於下方微調後點擊「生成完整行程與報價」。</div>${el.innerHTML}`;
+  },150);
+}
+
 function distSpots(list,perDay,desc){
+  const sorted=[...list].sort((a,b)=>desc?(b.a-a.a):(a.a-b.a));
+  const have=sorted.length,n=perDay.length,need=perDay.reduce((x,y)=>x+y,0);
+  if(have<n||have>need)return distSpotsOld(list,perDay,desc);
+  const ideal=perDay.map(v=>v*have/need);
+  const gap=[0];for(let j=1;j<have;j++)gap[j]=zoneT(sorted[j-1].a,sorted[j].a);
+  const seg=(l,r)=>{let s=0,mx=0;for(let j=l+1;j<r;j++){s+=gap[j];mx=Math.max(mx,gap[j])}return s+(mx>=90?300:0)};
+  const INF=1e9;
+  for(const strict of [true,false]){
+    const dp=Array.from({length:n+1},()=>Array(have+1).fill(INF)),par=Array.from({length:n+1},()=>Array(have+1).fill(0));
+    dp[0][0]=0;
+    for(let i=1;i<=n;i++){
+      const lo=strict?Math.max(1,Math.floor(ideal[i-1])-1):1;
+      for(let k=i;k<=have;k++)for(let sz=lo;sz<=perDay[i-1]&&sz<=k;sz++){
+        const p=dp[i-1][k-sz];if(p>=INF)continue;
+        const c=p+seg(k-sz,k)+Math.abs(sz-ideal[i-1])*8;
+        if(c<dp[i][k]){dp[i][k]=c;par[i][k]=sz}
+      }
+    }
+    if(dp[n][have]<INF){
+      const out=Array.from({length:n},()=>[]);let k=have;
+      for(let i=n;i>=1;i--){const sz=par[i][k];out[i-1]=sorted.slice(k-sz,k);k-=sz}
+      return out;
+    }
+  }
+  return distSpotsOld(list,perDay,desc);
+}
+function distSpotsOld(list,perDay,desc){
   const sorted=[...list].sort((a,b)=>desc?(b.a-a.a):(a.a-b.a));
   const need=perDay.reduce((a,b)=>a+b,0),have=sorted.length;
   let q=[...perDay];
@@ -597,7 +801,8 @@ function readForm(){
   }
   let sd=$('inDate').value?new Date($('inDate').value+"T00:00:00"):addD(new Date(),30);
   const today=new Date();today.setHours(0,0,0,0);
-  if(sd<today){sd=addD(today,30);alert("出發日期不可早於今日，已自動調整為 30 天後。");$('inDate').value=ymd(sd)}
+  let dateAdjusted=false;
+  if(sd<today){sd=addD(today,30);$('inDate').value=ymd(sd);dateAdjusted=true}
   return{days:td,pax,adult,child,from,cityAlloc,cities,
     gtype:document.querySelector('input[name=gtype]:checked')?.value||"企業員工",
     special:[...document.querySelectorAll('input[name=special]:checked')].map(i=>i.value),
@@ -612,7 +817,8 @@ function readForm(){
     agency:($('inAgency')?.value||"").trim(),taxId:($('inTaxId')?.value||"").trim(),
     agent:($('inAgent')?.value||"").trim(),license:($('inLicense')?.value||"").trim(),
     subsidy:[...document.querySelectorAll('input[name=subsidy]:checked')].map(i=>i.value),
-    picks:[...picked],startDate:sd,extraCost:0,removedSpots:[],trimDays:{},discountRate:0};
+    picks:[...picked],startDate:sd,extraCost:0,removedSpots:[],trimDays:{},discountRate:0,
+    _dateAdjusted:dateAdjusted};
 }
 
 function renderSpots(cities){
@@ -630,9 +836,10 @@ function renderSpots(cities){
         const tag=s.custom?'<span class="badge-custom">自訂</span>':'';
         const nt=s.note?'<span class="badge-note" title="'+esc(s.note)+'">⚠ 提醒</span>':'';
         const nightTag=isNight(s.name)?'<span class="badge-note" style="background:#eef4fa;color:#2c5f8a;border-color:#c8dff2">🌙 夜間</span>':'';
+        const foodTag=isFood(s.name)?'<span class="badge-note" style="background:#fdf6e8;color:#8a6a1e;border-color:#e8d5a8">🍜 輕食</span>':'';
         h+=`<label class="spot-item${on?' on':''}" title="${esc(s.name)}${s.note?'｜'+esc(s.note):''}">
           <input type="checkbox" value="${esc(k)}"${on?' checked':''}>
-          <span>${esc(s.name)}${tag}${nightTag}${nt}</span>
+          <span>${esc(s.name)}${tag}${nightTag}${foodTag}${nt}</span>
           <span class="meta">${s.s}分${s.t?'・'+s.t+'元':'・免費'}</span></label>`;
       });
       h+=`</div></div>`;
@@ -665,7 +872,8 @@ function addCustom(){
 const updArea=city=>{const sel=$('csArea');sel.innerHTML=CA[city].map(k=>`<option value="${k}">${AREA_NM[k]}</option>`).join("")};
 
 function planTrip(cfg){
-  const alloc=cfg.cityAlloc,plans=[],dropped=[];
+  const alloc=cfg.cityAlloc||[],plans=[],dropped=[];
+  if(!alloc.length){plans.dropped=dropped;return plans}
   for(let ci=0;ci<alloc.length;ci++){
     const city=alloc[ci];
     const all=getAllSpots(city.name).filter(s=>!cfg.removedSpots.includes(sKey(city.name,s.name)));
@@ -676,20 +884,20 @@ function planTrip(cfg){
     for(let d=0;d<city.days;d++){
       let n=4;
       if(!first&&d===0){const tm=drive(prev,city.name);n=tm>=150?2:(tm>=90?3:4)}
-      if(first&&d===0){const dm=drive(cfg.from,city.name);n=dm>=240?2:(dm>=120?3:4)}
-      /* v15.2：末日景點數依回程車程重新計算，避免下午空窗
-       *  短程返家（<120 分）：安排 4 個景點，最後約 16:30 出發回家
-       *  中程返家（120-180 分）：安排 3 個景點，最後約 15:30 出發
-       *  長程返家（≥180 分）：安排 2 個景點，最後約 14:00 出發
-       *  原本一律 n=2 導致下午 12:30-17:00 空白
-       */
+      if(first&&d===0){
+        const dm=drive(cfg.from,city.name);
+        const effDm=(cfg.traffic==="台鐵＋遊覽車"||cfg.traffic==="航空＋遊覽車")?Math.round(dm*0.75):dm;
+        n=effDm>=300?2:(effDm>=180?3:4);
+      }
       if(last&&d===city.days-1){
-  const dmB=drive(city.name,cfg.from);
-  if(dmB>=240) n=Math.min(n,2);      /* 4h+：2 個（上午 1、下午 1）*/
-  else if(dmB>=180) n=Math.min(n,3); /* 3-4h：3 個（上午 2、下午 1）*/
-  else if(dmB>=120) n=Math.min(n,4); /* 2-3h：4 個（上午 2、下午 2）*/
-  else n=Math.min(n,5);               /* <2h：5 個 */
-}
+        const dmB=drive(city.name,cfg.from);
+        const effDmB=(cfg.traffic==="台鐵＋遊覽車"||cfg.traffic==="航空＋遊覽車")?Math.round(dmB*0.75):dmB;
+        if(effDmB>=300) n=Math.min(n,2);
+        else if(effDmB>=240) n=Math.min(n,3);
+        else if(effDmB>=180) n=Math.min(n,4);
+        else if(effDmB>=120) n=Math.min(n,5);
+        else n=Math.min(n,6);
+      }
       if(city.days===1&&!first&&!last)n=Math.min(n,3);
       const gIdx=plans.length+d;
       n=Math.max(1,n-(cfg.trimDays?.[gIdx]||0));
@@ -702,12 +910,28 @@ function planTrip(cfg){
       list.slice(need).forEach(s=>{if(cfg.picks.includes(sKey(city.name,s.name)))dropped.push({city:city.name,name:s.name})});
       list=list.slice(0,need);
     }
-    if(list.length<need){
-      const rest=spots.filter(s=>!list.some(x=>x.name===s.name));
-      rest.sort((a,b)=>a.a-b.a);
-      list=list.concat(rest.slice(0,need-list.length));
+    const usedN=new Set(list.map(x=>x.name));
+    const pool=spots.filter(s=>!usedN.has(s.name)&&!noAuto(s,cfg));
+    const nearD=(s,arr)=>arr.length?Math.min(...arr.map(x=>zoneT(x.a,s.a))):0;
+    while(list.length<need&&pool.length){
+      pool.sort((x,y)=>nearD(x,list)-nearD(y,list)||x.a-y.a);
+      list.push(pool.shift());
     }
     const days=distSpots(list,perDay,ci>0);
+    days.forEach((arr,di)=>{
+      while(arr.length<perDay[di]&&pool.length){
+        let best=-1,bs=1e9;
+        pool.forEach((c,pi)=>{
+          let mx=0,sm=0;arr.forEach(x=>{const z=zoneT(x.a,c.a);mx=Math.max(mx,z);sm+=z});
+          if(arr.length&&mx>50)return;
+          const sc=arr.length?sm/arr.length:c.a;
+          if(sc<bs){bs=sc;best=pi}
+        });
+        if(best<0)break;
+        arr.push(pool.splice(best,1)[0]);
+      }
+      arr.sort((a,b)=>ci>0?b.a-a.a:a.a-b.a);
+    });
     for(let d=0;d<city.days;d++){
       const dp=buildDay(days[d],plans.length,cfg,{cityName:city.name,nights,dayNo:d,isArrival:first&&d===0,crossFrom:(!first&&d===0)?prev:null,isFinalDay:last&&d===city.days-1});
       plans.push(dp);
@@ -726,15 +950,22 @@ function buildDay(spots,dayIdx,cfg,meta){
   let busStart=8*60+30;
   const inLunch=force=>{if(lunch)return;if(!force&&t<11*60+30)return;const st=Math.max(t,11*60+30);rows.push({type:'meal',time:hm(st)+"–"+hm(st+60),text:"午餐（團體合菜）"});t=st+60;lunch=true;contDrive=0};
   const inDinner=()=>{if(dinner||t<17*60+30)return;const st=Math.max(t,17*60+30);rows.push({type:'meal',time:hm(st)+"–"+hm(st+60),text:isLast?"晚餐（自理／返程餐盒）":"晚餐（團體合菜）"});t=st+60;dinner=true};
-  const checkRest=(n,txt)=>{if(contDrive>0&&(contDrive+n)>240){rows.push({type:'meal',time:hm(t)+"–"+hm(t+30),text:txt||"⚠ 連續駕車接近 4 小時，依規定安排 30 分鐘休息",midStop:true});t+=30;midStop++;contDrive=0}};
+  const checkRest=(n,txt,base)=>{
+    if(contDrive>0&&(contDrive+n)>240){
+      const bt=(base==null?t:base);
+      rows.push({type:'meal',time:hm(bt)+"–"+hm(bt+30),text:txt||"⚠ 連續駕車接近 4 小時，依規定安排 30 分鐘休息",midStop:true});
+      midStop++;contDrive=0;
+      if(base==null)t+=30;
+    }
+  };
   const longTransit=(f,to,dm,st,isRail)=>{if(dm<=0)return st;const pre=isRail?'🚆':'🚌';
-    if(dm<=180){checkRest(dm);rows.push({type:'transit',time:hm(st)+"–"+hm(st+dm),text:`${pre} ${f} → ${to}（車程約 ${(dm/60).toFixed(1)} 小時）`,railTransit:isRail});transit+=dm;contDrive+=dm;return st+dm}
-    const mid=Math.floor(dm/2);checkRest(mid);
+    if(dm<=180){checkRest(dm,null,st);rows.push({type:'transit',time:hm(st)+"–"+hm(st+dm),text:`${pre} ${f} → ${to}（車程約 ${(dm/60).toFixed(1)} 小時）`,railTransit:isRail});transit+=dm;contDrive+=dm;return st+dm}
+    const mid=Math.floor(dm/2);checkRest(mid,null,st);
     rows.push({type:'transit',time:hm(st)+"–"+hm(st+mid),text:`${pre} ${f} → ${to}（前段，約 ${(mid/60).toFixed(1)} 小時）`,railTransit:isRail});
     let t2=st+mid;contDrive+=mid;
     if(!lunch){rows.push({type:'meal',time:hm(t2)+"–"+hm(t2+50),text:`中途午餐（休息站／休息區，約 50 分）`,midStop:true});t2+=50;lunch=true;midStop++;contDrive=0}
     else{const r=contDrive>=240?30:15;rows.push({type:'meal',time:hm(t2)+"–"+hm(t2+r),text:contDrive>=240?"⚠ 連續駕車滿 4 小時，依規定安排 30 分鐘休息":"中途休息站",midStop:true});t2+=r;midStop++;contDrive=0}
-    checkRest(dm-mid);
+    checkRest(dm-mid,null,t2);
     rows.push({type:'transit',time:hm(t2)+"–"+hm(t2+(dm-mid)),text:`${pre} ${f} → ${to}（後段，約 ${((dm-mid)/60).toFixed(1)} 小時）`,railTransit:isRail});
     t2+=(dm-mid);transit+=dm;contDrive+=(dm-mid);
     return t2+20};
@@ -752,17 +983,15 @@ function buildDay(spots,dayIdx,cfg,meta){
   if(meta.crossFrom){const dm=drive(meta.crossFrom,meta.cityName);t=longTransit(meta.crossFrom,meta.cityName,dm,8*60,false);busStart=8*60}
 
   let prevA=spots.length?spots[0].a:1;
-/* v15.3：末日強制午餐分隔——超過半數景點就插午餐，確保下午也有行程 */
-const lunchSplit = (meta.isFinalDay && spots.length>=2) ? Math.ceil(spots.length/2) : -1;
-spots.forEach((s,i)=>{
-  if(lunchSplit>0 && !lunch && i>=lunchSplit) inLunch(true);
-  inDinner();
-  if(i>0){const d=zoneT(prevA,s.a);transit+=d;checkRest(d);inLunch(false);rows.push({type:'transit-inner',time:hm(t)+"–"+hm(t+d),text:`車程：${zoneS(prevA)} → ${zoneS(s.a)}，約 ${d} 分鐘`,minutes:d});t+=d;prevA=s.a;contDrive+=d}
-  else inLunch(false);
-  rows.push({type:'spot',time:hm(t)+"–"+hm(t+s.s),text:s.name,stay:s.s,ticket:s.t,note:s.note||""});
-  t+=s.s;contDrive=0;inLunch(false);inDinner();
-});
-
+  const lunchSplit=(meta.isFinalDay&&spots.length>=2)?Math.ceil(spots.length/2):-1;
+  spots.forEach((s,i)=>{
+    if(lunchSplit>0&&!lunch&&i>=lunchSplit) inLunch(true);
+    inDinner();
+    if(i>0){const d=zoneT(prevA,s.a);transit+=d;checkRest(d);inLunch(false);rows.push({type:'transit-inner',time:hm(t)+"–"+hm(t+d),text:`車程：${zoneS(prevA)} → ${zoneS(s.a)}，約 ${d} 分鐘`,minutes:d});t+=d;prevA=s.a;contDrive+=d}
+    else inLunch(false);
+    rows.push({type:'spot',time:hm(t)+"–"+hm(t+s.s),text:s.name,stay:s.s,ticket:s.t,note:s.note||""});
+    t+=s.s;contDrive=0;inLunch(false);inDinner();
+  });
   inLunch(true);
   if(!dinner){const st=isLast?Math.max(t,17*60):Math.max(t,17*60+30);rows.push({type:'meal',time:hm(st)+"–"+hm(st+(isLast?40:60)),text:isLast?"晚餐（自理／返程餐盒）":"晚餐（團體合菜）"});t=st+(isLast?40:60);dinner=true}
 
@@ -792,7 +1021,7 @@ spots.forEach((s,i)=>{
       t=Math.max(t,19*60);
       const noteTxt=(n.note?n.note+"；":"")+"夜間活動以步行或飯店接駁，不計遊覽車工時";
       rows.push({type:'spot',time:hm(t)+"–"+hm(t+n.s),text:n.name+"（夜間）",stay:n.s,ticket:n.t,note:noteTxt,night:true});
-      spots.push(n);t+=n.s;
+      spots.push(Object.assign({},n,{night:true}));t+=n.s;
     }else if(t<21*60){
       rows.push({type:'night',time:hm(t)+"–"+hm(Math.min(t+90,21*60+30)),text:"晚間自由活動／飯店休息"});
       t=Math.min(t+90,21*60+30);busEnd=t;
@@ -806,10 +1035,9 @@ spots.forEach((s,i)=>{
 function calcCost(cfg,plans){
   const {days,pax,adult,child}=cfg,nights=Math.max(0,days-1);
   const bus=busInfo(pax+1);
-  const crossCount=Math.max(0,(cfg.cityAlloc||[]).length-1);
-  const crossSur=crossCount>0?(CONFIG.crossCitySurcharge||2500):0;
-  const crossTotal=crossSur*bus.n*days,busTotal=bus.rate*bus.n*days;
-  const drvMeal=nights>0?1000*nights*bus.n:0;
+  /* v16.0 已移除跨縣市加價 */
+  const busTotal=bus.rate*bus.n*days;
+  const drvMeal=nights>0?(CONFIG.driverMealRate||1000)*nights*bus.n:0;
   let railCost=0,railNote="";
   if(cfg.traffic==="台鐵＋遊覽車"){const p=1600;railCost=p*pax;railNote=`自強號來回約 ${p.toLocaleString()} 元/人 × ${pax} 人`}
   else if(cfg.traffic==="航空＋遊覽車"){const p=4000;railCost=p*pax;railNote=`飛機來回約 ${p.toLocaleString()} 元/人 × ${pax} 人`}
@@ -818,7 +1046,7 @@ function calcCost(cfg,plans){
   const mealTotal=mealR*tables*(lc+dc);
   const allS=plans.flatMap(d=>d.spots),tickA=allS.reduce((s,x)=>s+x.t,0),tickTotal=Math.round(tickA*adult+tickA*0.7*child);
   const leaderTotal=CONFIG.leaderFee*days,insTotal=CONFIG.insurance*pax;
-  const sub=busTotal+crossTotal+drvMeal+railCost+hotelTotal+mealTotal+tickTotal+leaderTotal+insTotal+(cfg.extraCost||0);
+  const sub=busTotal+drvMeal+railCost+hotelTotal+mealTotal+tickTotal+leaderTotal+insTotal+(cfg.extraCost||0);
   const misc=Math.round(sub*CONFIG.miscRate),costTotal=sub+misc;
   const subs=cfg.subsidy||[];
   let subsTotal=0,subsNote=[];
@@ -829,11 +1057,11 @@ function calcCost(cfg,plans){
   const discount=Math.round(costAfter*(cfg.discountRate||0));
   const grandRaw=costAfter+profit-discount;
   const perPerson=Math.ceil(grandRaw/pax/10)*10,finalTotal=perPerson*pax;
-  return{busRate:bus.rate,busType:bus.type,busN:bus.n,busTotal,crossCount,crossSurcharge:crossSur,crossTotal,driverMealLodging:drvMeal,railCost,railNote,hotelRate:hotelR,hotelTotal,nights,mealPerTable:mealR,tables,lunchCnt:lc,dinnerCnt:dc,mealTotal,ticketAdult:tickA,ticketTotal:tickTotal,spotCount:allS.length,leaderTotal,insTotal,misc,sub,costTotal,subsidyTotal:subsTotal,subsidyNote:subsNote,costAfterSubsidy:costAfter,profit,discount,grandTotalRaw:grandRaw,roundAdj:finalTotal-grandRaw,grandTotal:finalTotal,perPerson,perPersonPerDay:Math.round(perPerson/days),tipsTotal:300*days};
+  return{busRate:bus.rate,busType:bus.type,busN:bus.n,busTotal,driverMealLodging:drvMeal,driverMealRate:CONFIG.driverMealRate||1000,railCost,railNote,hotelRate:hotelR,hotelTotal,nights,mealPerTable:mealR,tables,lunchCnt:lc,dinnerCnt:dc,mealTotal,ticketAdult:tickA,ticketTotal:tickTotal,spotCount:allS.length,leaderTotal,insTotal,misc,sub,costTotal,subsidyTotal:subsTotal,subsidyNote:subsNote,costAfterSubsidy:costAfter,profit,discount,grandTotalRaw:grandRaw,roundAdj:finalTotal-grandRaw,grandTotal:finalTotal,perPerson,perPersonPerDay:Math.round(perPerson/days),tipsTotal:300*days};
 }
 
 const genCode=cfg=>{const d=cfg.startDate,ab={花蓮縣:"HUN",台東縣:"TTT"};return cfg.cityAlloc.map(c=>ab[c.name]||"TWN").join("")+'-'+ymd(d).replace(/-/g,'')+'-'+cfg.pax};
-const dayType=dp=>dp.meta.crossFrom?{label:"轉場日",cls:"drive"}:dp.transitTotal>=150?{label:"拉車日",cls:"drive"}:dp.spots.filter(s=>!s.name.includes("（夜間）")).length>=4&&dp.transitTotal<60?{label:"深度日",cls:"deep"}:null;
+const dayType=dp=>dp.meta.crossFrom?{label:"轉場日",cls:"drive"}:dp.transitTotal>=150?{label:"拉車日",cls:"drive"}:dp.spots.filter(s=>!s.night).length>=4&&dp.transitTotal<60?{label:"深度日",cls:"deep"}:null;
 const applyLock=()=>{document.querySelectorAll('[data-emg],[data-simplify]').forEach(b=>b.disabled=LOCKED);const f=$('btnAutoFix');if(f)f.disabled=LOCKED};
 const traffLabel=(dp,c)=>{if(dp.isRailOrAir){if(c.traffic==="台鐵＋遊覽車")return"巴士送站+台鐵";if(c.traffic==="航空＋遊覽車")return"巴士送站+航空";return"巴士+接駁"}if(dp.isSelf)return"當地自理";const b=busInfo(c.pax+1);return b.n>1?`巴士 ×${b.n}`:"巴士"};
 
@@ -858,7 +1086,7 @@ function renderItinerary(cfg,plans){
     <table><thead><tr><th style="width:62px">日期</th><th style="width:44px">星期</th><th>行程景點</th><th style="width:110px">交通</th><th style="width:52px">早餐</th><th style="width:52px">午餐</th><th style="width:52px">晚餐</th><th style="width:160px">住宿</th></tr></thead><tbody>`;
   plans.forEach((dp,i)=>{
     const d=addD(cfg.startDate,i);
-    const names=dp.spots.map(s=>s.name).join(" → ")||"自由活動";
+    const names=dp.spots.map(s=>s.name+(s.night?"（夜間）":"")).join(" → ")||"自由活動";
     const last=i===cfg.days-1;
     const bf=i===0?"X":(cfg.breakfast==="飯店內"?"飯店內":"自理");
     const dn=last?"自理":"團餐";
@@ -876,14 +1104,15 @@ function renderItinerary(cfg,plans){
     const ct=cross?`<span class="day-badge drive">跨縣市：${esc(m.crossFrom)}→${esc(m.cityName)}</span>`:"";
     const tt=dp.transitTotal>0?`　🚌 車程 ${(dp.transitTotal/60).toFixed(1)} 小時`:"";
     const mt=dp.midStopCount>0?`　☕ 中途休息 ${dp.midStopCount} 次`:"";
-    const nightCount=dp.spots.filter(s=>s.name.includes("（夜間）")).length;
+    const nightCount=dp.spots.filter(s=>s.night).length;
     const nt=nightCount>0?`　🌙 夜間活動 ${nightCount} 個`:"";
     h+=`<div class="${cls}"><span>第 ${i+1} 日　${d.getMonth()+1}月${d.getDate()}日（星期${WK[d.getDay()]}）${ct}${tb}${rb}</span><span class="sum">${esc(m.cityName)}　${dp.spots.length-nightCount} 個景點${nt}${tt}${mt}　🚐 遊覽車 ${dp.busDuration} 小時${warn}</span></div>${sv}
       <table><thead><tr><th style="width:130px">時間</th><th>行程內容</th><th style="width:100px">停留</th><th style="width:90px">門票</th></tr></thead><tbody>`;
     dp.rows.forEach(r=>{
       if(r.type==='spot'){
         const nt2=r.note?`<span class="spot-note" title="${esc(r.note)}">${r.night?'🌙':'⚠'} ${esc(r.note.length>20?r.note.substring(0,20)+'…':r.note)}</span>`:'';
-        h+=`<tr><td class="tl-time">${r.time}</td><td class="tl-spot">${esc(r.text)}${nt2}</td><td>${r.stay} 分鐘</td><td>${r.ticket?r.ticket+" 元":"免費"}</td></tr>`;
+        const txt=r.night?esc(r.text):(isFood(r.text)?'🍜 '+esc(r.text):esc(r.text));
+        h+=`<tr><td class="tl-time">${r.time}</td><td class="tl-spot">${txt}${nt2}</td><td>${r.stay} 分鐘</td><td>${r.ticket?r.ticket+" 元":"免費"}</td></tr>`;
       }else if(r.type==='meal'){
         if(r.midStop)h+=`<tr class="transit-row mid-lunch"><td>${r.time}</td><td>☕ ${esc(r.text)}<span class="transit-tag">休息站</span></td><td colspan="2">—</td></tr>`;
         else h+=`<tr><td class="tl-time">${r.time}</td><td class="tl-meal">🍽 ${esc(r.text)}</td><td colspan="2">—</td></tr>`;
@@ -940,18 +1169,17 @@ function renderQuote(cfg,plans,cost){
 
   const row=(n,b,v,c)=>`<tr${c?` class="${c}"`:''}><td>${n}</td><td>${b}</td><td>${typeof v==='number'?v.toLocaleString():v}</td></tr>`;
   const L=n=>n.toLocaleString();
-  const nightTickets=plans.flatMap(d=>d.spots).filter(s=>s.name.includes("（夜間）")).length;
+  const nightTickets=plans.flatMap(d=>d.spots).filter(s=>s.night).length;
   const spotLabel=`共 ${cost.spotCount} 個景點${nightTickets>0?`（含 ${nightTickets} 個夜間）`:""}`;
   h+=`<div class="internal"><h2>成本結構明細</h2>
 <table class="cost-tbl"><thead><tr><th>費用項目</th><th>計算基礎</th><th>金額（新台幣）</th></tr></thead><tbody>`+[
  row("遊覽車租金",`${cost.busType} × ${L(cost.busRate)} 元／日 × ${cost.busN} 台 × ${cfg.days} 日`,cost.busTotal),
- cost.crossTotal>0&&row("跨縣市加價",`加價 ${L(cost.crossSurcharge)} 元／日 × ${cost.busN} 台 × ${cfg.days} 日`,cost.crossTotal),
- cost.driverMealLodging>0&&row("司機餐宿補貼",`1,000 元／晚 × ${cost.busN} 台 × ${nights} 晚`,cost.driverMealLodging),
+ cost.driverMealLodging>0&&row("司機餐宿補貼",`${L(cost.driverMealRate)} 元／晚 × ${cost.busN} 台 × ${nights} 晚`,cost.driverMealLodging),
  cost.railCost>0&&row("鐵路／航空費用",esc(cost.railNote),cost.railCost),
  row("住宿費",`${cfg.hotel} 每人每晚 ${L(cost.hotelRate)} 元 × ${cfg.pax} 人 × ${nights} 晚`,cost.hotelTotal),
  row("餐食費",`${cfg.meal}合菜 每桌 ${L(cost.mealPerTable)} 元 × ${cost.tables} 桌 ×（午 ${cost.lunchCnt}＋晚 ${cost.dinnerCnt} 餐）`,cost.mealTotal),
  row("門票費",`${spotLabel}｜${cfg.child?`成人 ${cfg.adult} 人全票 ＋ 兒童 ${cfg.child} 人 7 折`:`每人門票合計 ${cost.ticketAdult} 元 × ${cfg.pax} 人`}`,cost.ticketTotal),
- row("領隊出差費",`${L(CONFIG.leaderFee)} 元／日 × ${cfg.days} 日`,cost.leaderTotal),
+ row("導遊、領隊出差費",`${L(CONFIG.leaderFee)} 元／日 × ${cfg.days} 日`,cost.leaderTotal),
  row("旅行業責任保險",`每人 ${CONFIG.insurance} 元 × ${cfg.pax} 人`,cost.insTotal),
  cfg.extraCost&&row("突發調度費用","臨時增額",cfg.extraCost),
  row("行政雜支",`成本小計 × ${(CONFIG.miscRate*100).toFixed(1)}%`,cost.misc),
@@ -966,12 +1194,11 @@ function renderQuote(cfg,plans,cost){
 ].filter(Boolean).join("")+`</tbody></table></div>`;
 
   const rInc=cost.railCost>0?`${cfg.traffic}之鐵路／航空費用、`:"";
-  const cInc=cost.crossTotal>0?`跨縣市加價、`:"";
   const dInc=cost.driverMealLodging>0?`司機餐宿補貼、`:"";
   const bfT=cfg.breakfast==="飯店內"?`含早餐：${cfg.breakfast}、`:`早餐：${cfg.breakfast}、`;
   h+=`<h2 style="margin-top:24px">費用包含與不包含</h2>
     <table><thead><tr><th style="width:110px">項目</th><th>內容說明</th></tr></thead><tbody>
-    <tr><td><b>費用包含</b></td><td>${rInc}${cInc}${cost.busType}當地車資及司機服務費、${dInc}${nights} 晚 ${cfg.hotel} 住宿（${bfT}）、午晚餐共 ${cost.lunchCnt+cost.dinnerCnt} 餐（${cfg.meal}合菜，每桌 ${cost.tables} 桌）、行程所列景點門票、領隊出差費、旅行業責任保險（意外死殘 250 萬、體傷醫療 10 萬）、行政雜支。</td></tr>
+    <tr><td><b>費用包含</b></td><td>${rInc}${cost.busType}當地車資及司機服務費、${dInc}${nights} 晚 ${cfg.hotel} 住宿（${bfT}）、午晚餐共 ${cost.lunchCnt+cost.dinnerCnt} 餐（${cfg.meal}合菜，每桌 ${cost.tables} 桌）、行程所列景點門票、導遊領隊出差費、旅行業責任保險（意外死殘 250 萬、體傷醫療 10 萬）、行政雜支。</td></tr>
     <tr><td><b>費用不含</b></td><td>領隊導遊小費（建議每人每日 300 元，${cfg.days} 日共 ${cost.tipsTotal.toLocaleString()} 元）、個人消費、行程表未列之自費活動、行李超重費、個人旅遊平安保險。</td></tr>
     ${cfg.remark?`<tr><td><b>特別備註</b></td><td>${esc(cfg.remark)}</td></tr>`:""}
     </tbody></table>
@@ -984,7 +1211,7 @@ function renderQuote(cfg,plans,cost){
       <li>金針花季（約 8-9 月）赤柯山、六十石山全線禁止甲、乙類大客車上山，需改搭 9 人座接駁車。</li>
       <li>阿朗壹古道需事先申請入山證，不適合大客車進入，需安排 9 人座接駁。</li>
       <li>旅客如需投保個人旅遊平安險，可另行委託辦理。</li>
-      <li>本報價單由「東部旅遊規劃系統 v15.2」自動產出，如有疑問請洽承辦業務人員。</li>
+      <li>本報價單由「東部旅遊規劃系統 v16.0」自動產出，如有疑問請洽承辦業務人員。</li>
     </ul>`;
   $('pane-quote').innerHTML=h;
   const fb=$('btnAutoFix');if(fb)fb.addEventListener('click',autoFix);
@@ -994,7 +1221,7 @@ function renderQuote(cfg,plans,cost){
 function renderHealth(cfg,plans,cost){
   const issues=[],add=(l,t)=>issues.push({level:l,text:t});
   const nc=cfg.cityAlloc.length,avgD=cfg.days/nc,railOrAir=["台鐵＋遊覽車","航空＋遊覽車"].includes(cfg.traffic);
-  const daySpots=plans.flatMap(d=>d.spots).filter(s=>!s.name.includes("（夜間）"));
+  const daySpots=plans.flatMap(d=>d.spots).filter(s=>!s.night);
   const totS=daySpots.length,avgS=totS/cfg.days,drop=plans.dropped||[];
   const over=cfg.budget>0&&cost.perPerson>cfg.budget,pr=cfg.profitRate,pct=(pr*100).toFixed(0);
   const mini=cfg.hotel==="民宿",hasR=cfg.remark.includes('素');
@@ -1030,6 +1257,7 @@ function renderHealth(cfg,plans,cost){
     else if(dp.overTime)add('warn',`第 ${n} 日遊覽車使用約 <b>${dp.busDuration} 小時</b>，超過 10 小時上限。`);
     if(dp.transitTotal>=150)add('warn',`第 ${n} 日車程達 <b>${tr} 小時</b>，屬「拉車日」。`);
     else if(dp.transitTotal>=90)add('info',`第 ${n} 日車程約 ${tr} 小時。`);
+    dp.rows.forEach(r=>{if(r.type==='transit-inner'&&r.minutes>=80)add('warn','第 '+n+' 日景點間單段車程達 <b>'+r.minutes+' 分鐘</b>，建議將南北兩端景點拆到不同天。')});
     dp.spots.forEach(s=>s.note&&add('info',`第 ${n} 日「${s.name}」：${s.note}`));
   });
 
@@ -1039,6 +1267,7 @@ function renderHealth(cfg,plans,cost){
   issues.sort((a,b)=>ord[a.level]-ord[b.level]);
   const td=plans.map((dp,i)=>({day:i+1,city:dp.meta.cityName,transit:dp.transitTotal,spots:dp.spots.length,busDuration:dp.busDuration,total:parseFloat(dp.totalH),severe:dp.severeOver,over:dp.overTime}));
   const totT=td.reduce((a,b)=>a+b.transit,0);
+  const costRatio=cost.grandTotalRaw>0?((cost.costAfterSubsidy/cost.grandTotalRaw)*100).toFixed(1)+"%":"—";
 
   let h=`<div class="internal"><h2>行程健檢報告</h2>
     <div class="hint" style="margin-bottom:16px">系統依「跨縣市合理性、動線、時間、車程、成本、利潤率、法規合規、特殊需求」等面向自動檢查。</div>
@@ -1065,11 +1294,11 @@ function renderHealth(cfg,plans,cost){
     <tr><td>每人門票支出</td><td>${money(cost.ticketAdult)}</td><td>成人全票合計</td></tr>
     <tr><td>每人團費</td><td>${money(cost.perPerson)}</td><td>含利潤 ${(cfg.profitRate*100).toFixed(0)}%</td></tr>
     <tr><td>每人每日平均團費</td><td>${money(cost.perPersonPerDay)}</td><td>可與國旅市場行情比對</td></tr>
-    <tr><td>成本占售價比</td><td>${(cost.costAfterSubsidy/cost.grandTotalRaw*100).toFixed(1)}%</td><td>國旅常見 85%～92%</td></tr>
+    <tr><td>成本占售價比</td><td>${costRatio}</td><td>國旅常見 85%～92%</td></tr>
     ${cost.subsidyTotal>0?`<tr><td>觀光署補助折抵</td><td>${money(cost.subsidyTotal)}</td><td>${cost.subsidyNote.join("、")}</td></tr>`:""}
     </tbody></table></div>`;
 
-  const N={"花蓮縣":["太魯閣、中橫沿線常有落石或交通管制，出發前請查公路總局即時路況。","金針花季（約 8-9 月）赤柯山、六十石山全線禁止甲、乙類大客車上山，需改搭 9 人座接駁車。","花蓮市區團體餐廳數量有限，建議提前 5-7 天預訂。","花蓮縣境南北狹長（約 137 公里），避免同日跨北端與南端。","花蓮地區合法民宿數量多，但團體房型有限，訂房前請確認。"],
+  const N={"花蓮縣":["目前太魯閣園區僅開放遊客中心參觀，燕子口等步道管制中，請以太管處公告為準。","太魯閣、中橫沿線常有落石或交通管制，出發前請查公路總局即時路況。","金針花季（約 8-9 月）赤柯山、六十石山全線禁止甲、乙類大客車上山，需改搭 9 人座接駁車。","花蓮市區團體餐廳數量有限，建議提前 5-7 天預訂。","花蓮縣境南北狹長（約 137 公里），避免同日跨北端與南端。","花蓮地區合法民宿數量多，但團體房型有限，訂房前請確認。"],
     "台東縣":["台 11 線（海岸公路）與台 9 線（縱谷公路）加油站較少，出發前請確認油量。","熱氣球嘉年華（約 6-8 月）鹿野高台周邊交通管制，需提早出發，且現場禁止使用空拍機。","阿朗壹古道需事先申請入山證，每日限額，請提前 30 天申請；不適合大客車。","知本溫泉區颱風後可能封閉，出發前請確認開放狀況。","台東縣境南北狹長（約 176 公里），避免同日跨南端與北端。","台東地區團體餐廳選擇較少，建議提前確認並預訂。"]};
   const shown=cfg.cityAlloc.map(c=>c.name).filter(c=>N[c]);
   if(shown.length)h+=`<div class="notice-box"><h3>📋 在地注意事項</h3>${shown.map(city=>`<div class="city-notice"><b>📍 ${esc(city)}</b><ul>${N[city].map(n=>`<li>${esc(n)}</li>`).join("")}</ul></div>`).join("")}</div>`;
@@ -1089,8 +1318,16 @@ function autoFix(){
     if(hI<HOTEL_ORDER.length-1){cfg.hotel=HOTEL_ORDER[hI+1];log.push(`住宿降級為「${cfg.hotel}」`);i++;continue}
     const mI=MEAL_ORDER.indexOf(cfg.meal);
     if(mI<MEAL_ORDER.length-1){cfg.meal=MEAL_ORDER[mI+1];log.push(`餐標降級為「${cfg.meal}」`);i++;continue}
-    const paid=plans.flatMap(d=>d.spots).filter(s=>s.t>0&&!s.name.includes("（夜間）")).sort((a,b)=>b.t-a.t);
-    if(paid.length){const t=paid[0],k=sKey(t.city,t.name);if(!cfg.removedSpots.includes(k))cfg.removedSpots.push(k);cfg.picks=cfg.picks.filter(p=>p!==k);log.push(`移除付費景點「${t.name}」（${t.t} 元）`);i++;continue}
+    const paid=plans.flatMap(d=>d.spots).filter(s=>s.t>0&&!s.night).sort((a,b)=>b.t-a.t);
+    if(paid.length){
+      const t=paid[0],k=sKey(t.city,t.name);
+      if(!cfg.removedSpots.includes(k)){
+        cfg.removedSpots.push(k);
+        cfg.picks=cfg.picks.filter(p=>p!==k);
+        picked.delete(k);saveP();
+        log.push(`移除付費景點「${t.name}」（${t.t} 元）`);i++;continue
+      }
+    }
     if(cfg.profitRate>0.06){cfg.profitRate=Math.max(0.06,cfg.profitRate-0.02);log.push(`利潤率下調至 ${(cfg.profitRate*100).toFixed(0)}%`);i++;continue}
     break;
   }
@@ -1121,10 +1358,9 @@ function exportCSV(){
   rows.push([],["每日遊覽車工時統計"],["日期","縣市","景點數","車程(分)","中途休息(次)","遊覽車工時(小時)","總時長(小時)"]);
   dayPlans.forEach((dp,i)=>rows.push([`第 ${i+1} 日`,dp.meta.cityName,dp.spots.length,dp.transitTotal,dp.midStopCount||0,dp.busDuration,dp.totalH]));
   rows.push([],["成本項目","金額"],["遊覽車租金",cost.busTotal]);
-  if(cost.crossTotal>0)rows.push(["跨縣市加價",cost.crossTotal]);
   if(cost.driverMealLodging)rows.push(["司機餐宿補貼",cost.driverMealLodging]);
   if(cost.railCost>0)rows.push(["鐵路／航空費用",cost.railCost]);
-  rows.push(["住宿費",cost.hotelTotal],["餐食費",cost.mealTotal],["門票費",cost.ticketTotal],["領隊出差費",cost.leaderTotal],["保險費",cost.insTotal],["行政雜支",cost.misc],["成本合計",cost.costTotal]);
+  rows.push(["住宿費",cost.hotelTotal],["餐食費",cost.mealTotal],["門票費",cost.ticketTotal],["導遊、領隊出差費",cost.leaderTotal],["保險費",cost.insTotal],["行政雜支",cost.misc],["成本合計",cost.costTotal]);
   if(cost.subsidyTotal)rows.push(["觀光署補助折抵",-cost.subsidyTotal]);
   rows.push(["利潤",cost.profit]);
   if(cost.discount)rows.push(["議價折讓",-cost.discount]);
@@ -1150,7 +1386,7 @@ function exportClient(){
 <p>${esc(cfg.cities.join('、'))}　${cfg.days} 天 ${cfg.days-1} 夜　｜　出發地：${esc(cfg.from)}</p>
 ${cfg.taxId?`<p>統一編號：${esc(cfg.taxId)}　承辦人：${esc(cfg.agent||'')}　${esc(cfg.license||'')}</p>`:''}</div></header>
 <main><section class="card">${tmp.innerHTML}</section>
-<div class="disclaimer">本行程建議書由「東部旅遊規劃系統 v15.2」自動產出，內容為初步規劃，實際行程與報價依雙方簽約為準。
+<div class="disclaimer">本行程建議書由「東部旅遊規劃系統 v16.0」自動產出，內容為初步規劃，實際行程與報價依雙方簽約為準。
 <div class="sign"><span>系統設計：<b>姜福榮 老師</b></span><span>意見反映：<a href="mailto:arbaosayhi@gmail.com">arbaosayhi@gmail.com</a></span></div></div></main></body></html>`;
   const blob=new Blob([doc],{type:'text/html;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${genCode(cfg)}_客戶版.html`;
@@ -1187,7 +1423,11 @@ function loadTrip(name){
   const valid=(t.cfg.cities||[]).filter(c=>ALL_CITIES.includes(c));
   if(!valid.length){alert('此存檔的城市資料已失效。');return}
   const safeAlloc=(t.cfg.cityAlloc||[]).filter(c=>ALL_CITIES.includes(c.name));
-  const cfg={...t.cfg,cities:valid,cityAlloc:safeAlloc.length?safeAlloc:valid.map(c=>({name:c,days:Math.floor(t.cfg.days/valid.length)})),startDate:new Date(t.cfg.startDate),subsidy:t.cfg.subsidy||[],extraCost:t.cfg.extraCost||0,removedSpots:t.cfg.removedSpots||[],picks:t.cfg.picks||[],trimDays:t.cfg.trimDays||{},discountRate:t.cfg.discountRate||0,special:t.cfg.special||[]};
+  const ALIAS={'台東夜市':'台東觀光夜市'};
+  const fixPick=k=>{const p=k.split('|');if(p.length!==2)return k;return p[0]+'|'+(ALIAS[p[1]]||p[1])};
+  const fixedPicks=(t.cfg.picks||[]).map(fixPick);
+  const fixedRemoved=(t.cfg.removedSpots||[]).map(fixPick);
+  const cfg={...t.cfg,cities:valid,cityAlloc:safeAlloc.length?safeAlloc:valid.map(c=>({name:c,days:Math.floor(t.cfg.days/valid.length)})),startDate:new Date(t.cfg.startDate),subsidy:t.cfg.subsidy||[],extraCost:t.cfg.extraCost||0,removedSpots:fixedRemoved,picks:fixedPicks,trimDays:t.cfg.trimDays||{},discountRate:t.cfg.discountRate||0,special:t.cfg.special||[]};
   try{
     $('inDays').value=cfg.days;$('inPax').value=cfg.pax;$('inChild').value=cfg.child;$('inFrom').value=cfg.from;
     $('inDate').value=ymd(cfg.startDate);
@@ -1253,6 +1493,10 @@ function gen(){
   const plans=planTrip(CFG),cost=calcCost(CFG,plans);
   RESULT={cfg:CFG,dayPlans:plans,cost,base:deepClone(CFG)};
   renderItinerary(CFG,plans);renderQuote(CFG,plans,cost);renderHealth(CFG,plans,cost);
+  if(CFG._dateAdjusted){
+    const el=$('previewHint');
+    if(el)el.innerHTML=`<div class="alert">⚠ 出發日期不可早於今日，已自動調整為 ${ymd(CFG.startDate)}。</div>`+el.innerHTML;
+  }
   $('s3').classList.remove('hidden');setStep(3);$('s3').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -1269,9 +1513,15 @@ $('btnSaveTrip2').addEventListener('click',saveTrip);
 $('btnClearAll').addEventListener('click',clearAll);
 $('btnLock').addEventListener('click',()=>{LOCKED=!LOCKED;$('btnLock').textContent=LOCKED?'🔒 報價已鎖定':'🔓 鎖定報價';$('btnLock').classList.toggle('gold',LOCKED);applyLock();const m=$('emgMsg');if(m)m.textContent=LOCKED?'🔒 已鎖定報價，突發狀況模擬、一鍵精簡與一鍵修正預算暫停使用。':'🔓 已解除鎖定。'});
 ['btnOpenTrips','btnOpenTrips2'].forEach(id=>$(id).addEventListener('click',()=>{renderTrips();openM('tripsModal')}));
+
+/* v16.0 成本參數設定：移除跨縣市加價、加入遊覽車各車型價格、司機餐宿補貼 */
 $('btnOpenConfig').addEventListener('click',()=>{
-  $('cfgCross').value=CONFIG.crossCitySurcharge;
+  $('cfgBus1').value=CONFIG.busRates["九人座廂型車"];
+  $('cfgBus2').value=CONFIG.busRates["21 人座中巴"];
+  $('cfgBus3').value=CONFIG.busRates["33 人座中巴"];
+  $('cfgBus4').value=CONFIG.busRates["43 人座大型巴士"];
   $('cfgLeader').value=CONFIG.leaderFee;
+  $('cfgDriver').value=CONFIG.driverMealRate;
   $('cfgIns').value=CONFIG.insurance;
   $('cfgMisc').value=(CONFIG.miscRate*100).toFixed(1);
   $('cfgH1').value=CONFIG.hotelRates["民宿"];$('cfgH2').value=CONFIG.hotelRates["三星"];
@@ -1281,8 +1531,13 @@ $('btnOpenConfig').addEventListener('click',()=>{
   openM('configModal');
 });
 $('btnCfgSave').addEventListener('click',()=>{
-  CONFIG.crossCitySurcharge=numV('cfgCross',CD.crossCitySurcharge);
+  CONFIG.busRates=CONFIG.busRates||{};
+  CONFIG.busRates["九人座廂型車"]=numV('cfgBus1',CD.busRates["九人座廂型車"]);
+  CONFIG.busRates["21 人座中巴"]=numV('cfgBus2',CD.busRates["21 人座中巴"]);
+  CONFIG.busRates["33 人座中巴"]=numV('cfgBus3',CD.busRates["33 人座中巴"]);
+  CONFIG.busRates["43 人座大型巴士"]=numV('cfgBus4',CD.busRates["43 人座大型巴士"]);
   CONFIG.leaderFee=numV('cfgLeader',CD.leaderFee);
+  CONFIG.driverMealRate=numV('cfgDriver',CD.driverMealRate);
   CONFIG.insurance=numV('cfgIns',CD.insurance);
   CONFIG.miscRate=numV('cfgMisc',CD.miscRate*100)/100;
   CONFIG.hotelRates["民宿"]=numV('cfgH1',CD.hotelRates["民宿"]);
@@ -1293,6 +1548,7 @@ $('btnCfgSave').addEventListener('click',()=>{
   CONFIG.mealRates["標準"]=numV('cfgM2',CD.mealRates["標準"]);
   CONFIG.mealRates["精緻"]=numV('cfgM3',CD.mealRates["精緻"]);
   CONFIG.mealRates["風味"]=numV('cfgM4',CD.mealRates["風味"]);
+  delete CONFIG.crossCitySurcharge;
   try{safeStore.setItem('cfg_v14',JSON.stringify(CONFIG))}catch(e){}
   closeM('configModal');alert('✅ 成本參數已儲存。');
 });
@@ -1325,14 +1581,18 @@ document.querySelectorAll('[data-emg]').forEach(b=>b.addEventListener('click',()
     setRadio('traffic',cfg.traffic);
     text="已恢復原始行程設定。";
   }else if(type==='closed'){
-    const all=RESULT.dayPlans.flatMap(d=>d.spots),paid=all.filter(s=>s.t>0&&!s.name.includes("（夜間）"));
+    const all=RESULT.dayPlans.flatMap(d=>d.spots),paid=all.filter(s=>s.t>0&&!s.night);
     const t=paid.length?paid[Math.floor(Math.random()*paid.length)]:all[0];
-    if(t){const k=sKey(t.city,t.name);if(!cfg.removedSpots.includes(k))cfg.removedSpots.push(k);text=`「${t.name}」因臨時封閉，已自行程中移除。`}
+    if(t){const k=sKey(t.city,t.name);if(!cfg.removedSpots.includes(k)){cfg.removedSpots.push(k);cfg.picks=cfg.picks.filter(p=>p!==k);picked.delete(k);saveP();text=`「${t.name}」因臨時封閉，已自行程中移除。`}}
   }else if(type==='bus'){cfg.extraCost=(cfg.extraCost||0)+3000;text="遊覽車臨時故障，調度備用車增加費用 3,000 元。"}
-  else if(type==='pax'){const add=Math.min(45,cfg.pax+5)-cfg.pax;if(add<=0)text="團體人數已達上限 45 人。";else{cfg.pax+=add;cfg.adult+=add;text=`客戶臨時增加 ${add} 人，團體人數調整為 ${cfg.pax} 人。`}}
+  else if(type==='pax'){
+    const add=Math.min(45,cfg.pax+5)-cfg.pax;
+    if(add<=0)text="團體人數已達上限 45 人。";
+    else{cfg.pax+=add;cfg.adult+=add;cfg.child=Math.min(cfg.child,cfg.pax);text=`客戶臨時增加 ${add} 人，團體人數調整為 ${cfg.pax} 人。`}
+  }
   else if(type==='upgrade'){cfg.hotel=cfg.hotel==="民宿"?"三星":(cfg.hotel==="三星"?"四星":"五星");text=`客戶要求升級住宿至「${cfg.hotel}」。`}
   else if(type==='cut'){cfg.discountRate=0.10;text=`客戶要求降價 10%，已於報價單加入「議價折讓」項目。`}
-  else if(type==='rain'){const all=RESULT.dayPlans.flatMap(d=>d.spots),coastal=all.filter(s=>s.a===3||s.a===8);coastal.forEach(s=>{const k=sKey(s.city,s.name);if(!cfg.removedSpots.includes(k))cfg.removedSpots.push(k)});text=`天候不佳，已將 ${coastal.length} 個海線景點自行程中移除。`}
+  else if(type==='rain'){const all=RESULT.dayPlans.flatMap(d=>d.spots),coastal=all.filter(s=>s.a===3||s.a===8);coastal.forEach(s=>{const k=sKey(s.city,s.name);if(!cfg.removedSpots.includes(k)){cfg.removedSpots.push(k);cfg.picks=cfg.picks.filter(p=>p!==k);picked.delete(k)}});saveP();text=`天候不佳，已將 ${coastal.length} 個海線景點自行程中移除。`}
   const plans=planTrip(cfg),cost=calcCost(cfg,plans);
   RESULT={cfg,dayPlans:plans,cost,base:RESULT.base};
   renderItinerary(cfg,plans);renderQuote(cfg,plans,cost);renderHealth(cfg,plans,cost);syncForm(cfg);
@@ -1345,10 +1605,12 @@ document.querySelectorAll('[data-emg]').forEach(b=>b.addEventListener('click',()
     const d=addD(new Date(),30);
     $('inDate').value=ymd(d);
     renderCities();
+    renderPkg();
     const cs=$('csCity');
     cs.innerHTML=ALL_CITIES.map(c=>`<option>${c}</option>`).join("");
     cs.value="花蓮縣";updArea("花蓮縣");
     try{if(safeStore.getItem(LS.G)==='1')$('guideCard').classList.add('collapsed')}catch(e){}
+    try{if(safeStore.getItem(LS.PK)==='1')$('pkgCard').classList.add('collapsed')}catch(e){}
     let u=parseInt(safeStore.getItem(LS.U)||'0',10)+1;
     try{safeStore.setItem(LS.U,u)}catch(e){}
     if(u>=5&&safeStore.getItem(LS.P)!=='1')$('supportBar').classList.remove('hidden');
